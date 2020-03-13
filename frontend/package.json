@@ -1,5 +1,5 @@
 {
-  "name": "the-burning-leaf",
+  "name": "the-burning-leaf-frontend",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -30,5 +30,17 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "description": "The frontend for the-burning-leaf site",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shafferchance/the-burning-leaf.git"
+  },
+  "author": "Chanceler Shaffer",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/shafferchance/the-burning-leaf/issues"
+  },
+  "homepage": "https://github.com/shafferchance/the-burning-leaf#readme"
 }
