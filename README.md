@@ -34,4 +34,4 @@ __Features__
 - Stretch Goal
     - [ ] Email templating (Need to test Square's API access to the data)
 
-The first deliverable is a splsh by Friday that will act as a sample piece for the request of first part of payment.
+The first deliverable is a splash by Friday that will act as a sample piece for the request of first part of payment.
