@@ -14,7 +14,7 @@ about.get('/hours', (req, res, next) => {
 
 });
 
-about.patch('/about', (req, res, next) => {
+about.patch('/hours', (req, res, next) => {
 
 });
 
@@ -32,11 +32,11 @@ about.get("/amenties", (req, res, next) => {
 
 });
 
-about.post("/amenties_add", (req, res, next) => {
+about.post("/amenties", (req, res, next) => {
 
 });
 
-about.patch("/amenties_update", (req, res, next) => {
+about.patch("/amenties", (req, res, next) => {
 
 });
 

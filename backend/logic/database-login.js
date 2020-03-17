@@ -2,8 +2,8 @@ const MongoClient = require('mongodb').MongoClient;
 
 const AUTH = "DEFAULT"
 const DB_NAME = "cigar_store";
-const URL = 'localhost:27017'; // On local instance, may move to a config or env var soonish
-const USER = { user: "reader", passwd: "WZ6A%UjHNCu;}e},"}
+const URL = 'cigar.temporaltech.app'; // On local instance, may move to a config or env var soonish
+const USER = { user: "normie", passwd: "W3c{}://!"}
 
 /**
  * 
@@ -13,8 +13,8 @@ const USER = { user: "reader", passwd: "WZ6A%UjHNCu;}e},"}
  * 
  * @returns {Promise} Resolves with 2-tuple of datbase
  */
-export const connect = (user = USER, dbName = DB_NAME, authMech = AUTH) => {
-    const client = new MongoClient(`mongodb://${encodeURIComponent(user["user"])}:${encodeURIComponent(user["passwd"])}@${URL}?authMechanism=${authMech}`);
+export const DBConnect = (user = USER, dbName = DB_NAME) => {
+    const client = new MongoClient(`mongodb://${encodeURIComponent(user["user"])}:${encodeURIComponent(user["passwd"])}@${URL}?authSource=admin`);
     return new Promise((res, rej) => {
         client.connect(err => {
             if (err) 
