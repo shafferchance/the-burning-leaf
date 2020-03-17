@@ -11,3 +11,22 @@
     height:300px;
     width:300px;
 }
+
+header h1 {
+    text-decoration: underline;
+}
+
+nav {
+    width: 50vw;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+}
+
+.right-banner {
+    position: fixed;
+    right: 0;
+}
