@@ -1,15 +1,9 @@
-.mapouter{
-    position:relative;
-    text-align:right;
-    height:300px;
-    width:300px;
-}
-
-.gmap_canvas {
-    overflow:hidden;
-    background:none;
-    height:300px;
-    width:300px;
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    --height-pic-container: 30vh;
+    --width-pic-container: auto;
 }
 
 header h1 {
@@ -26,7 +20,171 @@ nav ul {
     justify-content: space-between;
 }
 
+main {
+    display: flex;
+    min-height: 50vh;
+    width: 95vw;
+}
+
+.banner {
+    width: 20vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.mapouter{
+    position:relative;
+    text-align:right;
+    height:300px;
+    width: auto
+}
+
+.gmap_canvas {
+    overflow:hidden;
+    background:none;
+    height:300px;
+    width:auto;
+}
+
 .right-banner {
     position: fixed;
     right: 0;
+    top: 30%
+}
+
+@-webkit-keyframes cf4FadeInOut {
+    0% { /* 0 */
+        opacity: 1;
+    }
+    18.75% { /* (a/t*100%) */
+        opacity: 1;
+    }
+    25% { /* (a+b)/t*100% */
+        opacity: 0;
+    }
+    93.75% { /* 100%-(b/t*100%) */
+        opacity: 0;
+    }
+    100% { /* 100% */
+        opacity: 1;
+    }
+}
+
+@-moz-keyframes cf4FadeInOut {
+    0% { /* 0 */
+        opacity: 1;
+    }
+    18.75% { /* (a/t*100%) */
+        opacity: 1;
+    }
+    25% { /* (a+b)/t*100% */
+        opacity: 0;
+    }
+    93.75% { /* 100%-(b/t*100%) */
+        opacity: 0;
+    }
+    100% { /* 100% */
+        opacity: 1;
+    }
+}
+
+@-o-keyframes cf4FadeInOut {
+    0% { /* 0 */
+        opacity: 1;
+    }
+    18.75% { /* (a/t*100%) */
+        opacity: 1;
+    }
+    25% { /* (a+b)/t*100% */
+        opacity: 0;
+    }
+    93.75% { /* 100%-(b/t*100%) */
+        opacity: 0;
+    }
+    100% { /* 100% */
+        opacity: 1;
+    }
+}
+
+@keyframes cf4FadeInOut {
+    0% { /* 0 */
+        opacity: 1;
+    }
+    18.75% { /* (a/t*100%) */
+        opacity: 1;
+    }
+    25% { /* (a+b)/t*100% */
+        opacity: 0;
+    }
+    93.75% { /* 100%-(b/t*100%) */
+        opacity: 0;
+    }
+    100% { /* 100% */
+        opacity: 1;
+    }
+}
+
+.rotating-imgs {
+    width: var(--width-pic-container);
+    height: var(--height-pic-container);
+}
+
+.rotating-imgs img {
+    position: absolute;
+    width: var(--width-pic-container);
+    height: var(--height-pic-container);
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0;
+
+    -moz-animation-name: cf4FadeInOut;
+    -moz-animation-timing-function: ease-in-out;
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-duration: 16s;
+
+    -moz-animation-name: cf4FadeInOut;
+    -moz-animation-timing-function: ease-in-out;
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-duration: 16s;
+
+    -o-animation-name: cf4FadeInOut;
+    -o-animation-timing-function: ease-in-out;
+    -o-animation-iteration-count: infinite;
+    -o-animation-duration: 16s;
+
+    animation-name: cf4FadeInOut;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-duration: 16s;
+}
+
+/* anim delay either t/n or a+b, t=(a+b)*n; where a is presentation time for img
+                                                  b is duration of cross fade
+                                                  n is num of imgs*/
+.rotating-imgs img:nth-of-type(1) {
+    -webkit-animation-delay: 12s;
+    -moz-animation-delay: 12s;
+    -o-animation-delay: 12s;
+    animation-delay: 12s;
+}
+.rotating-imgs img:nth-of-type(2) {
+    -webkit-animation-delay: 8s;
+    -moz-animation-delay: 8s;
+    -o-animation-delay: 8s;
+    animation-delay: 8s;
+}
+.rotating-imgs img:nth-of-type(3) {
+    -webkit-animation-delay: 4s;
+    -moz-animation-delay: 4s;
+    -o-animation-delay: 4s;
+    animation-delay: 4s;
+}
+.rotating-imgs img:nth-of-type(4) {
+    -webkit-animation-delay: 0;
+    -moz-animation-delay: 0;
+    -o-animation-delay: 0;
+    animation-delay: 0;
 }
