@@ -49,9 +49,9 @@ main {
     margin-right: 5px;
 }
 
-.left-banner img {
+/*.left-banner img {
     border: 3px solid black;
-}
+}*/
 
 .left-banner img:not(:nth-of-type(1)) {
     margin-top: 5px;
