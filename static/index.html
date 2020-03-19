@@ -4,19 +4,20 @@
         <meta charset="utf-8">
         <title>The Buring Leaf</title>
         <link rel="stylesheet" href="index.css">
+        <script src="index.js" type="application/javascript"></script>
     </head>
     <body>
-        <header><h1>The Burning Leaf</h1></header>
         <nav>
-            <ul>
-                <li>Home</li>
-                <li>Cigars</li>
-                <li>Experience</li>
-                <li>About Us</li>
-            </ul>
+            <h1>The Burning Leaf</h1>
+            <a value="home">Home</a>
+            <a value="cigars">Cigars</a>
+            <a value="exp">Experience</a>
+            <a value="about">About Us</a>
         </nav>
-        <main>
-            <div class="banner left">
+        <main data-curr="home">
+            <div class="banner left-banner">
+                <img src="rsrcs/teaserimage-Best-Honduran-Cigar-Brands.png">
+                <img src="rsrcs/teaserimage-cigarforbegin_0.png">
             </div>
             <div class="center">
                 <div class="rotating-imgs">
@@ -28,7 +29,7 @@
                 <article>
                     <h2 style="text-align: center;">Welcome</h2>
                     <p>Welcome to the Burning Leaf please take a look at our fine 
-                        cigars and if any interest, why not come visit us soon. 
+                        cigars and if any interest you, why not come visit us soon. 
                         Thank you for stopping by. </p>
                 </article>
                 <article>
@@ -40,13 +41,14 @@
                     <p>Coming soon</p>
                 </article>
             </div>
-            <div class="banner right">
+            <div class="banner right-banner">
                 <section aria-label="contact-banner">
                     <address>
-                        (757) 292-4823
+                        <span aria-label="phone number">(757) 292-4823</span>
                         <br>
+                        <span aria-label="address">
                         1730 George Washington Memorial Hwy Suite E,<br>
-                        Yorktown, VA 23693
+                        Yorktown, VA 23693</span>
                     </address>
                     <div class="mapouter">
                         <div class="gmap_canvas">

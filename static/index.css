@@ -2,7 +2,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    --height-pic-container: 30vh;
+    --height-pic-container: 300px;
     --width-pic-container: auto;
 }
 
@@ -12,12 +12,10 @@ header h1 {
 
 nav {
     width: 50vw;
-}
-
-nav ul {
     list-style: none;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 main {
@@ -47,10 +45,23 @@ main {
     width:auto;
 }
 
+.left-banner {
+    margin-right: 5px;
+}
+
+.left-banner img {
+    border: 3px solid black;
+}
+
+.left-banner img:not(:nth-of-type(1)) {
+    margin-top: 5px;
+}
+
 .right-banner {
     position: fixed;
     right: 0;
-    top: 30%
+    top: 30%;
+    margin-left: 5px;
 }
 
 @-webkit-keyframes cf4FadeInOut {
@@ -127,7 +138,8 @@ main {
 
 .rotating-imgs {
     width: var(--width-pic-container);
-    height: var(--height-pic-container);
+    min-height: var(--height-pic-container);
+    max-height: 50vh;
 }
 
 .rotating-imgs img {
