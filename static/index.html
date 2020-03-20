@@ -2,35 +2,66 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>The Buring Leaf</title>
         <link rel="stylesheet" href="index.css">
         <script src="index.js" type="application/javascript"></script>
     </head>
     <body>
-        <nav>
+        <nav class="nav">
             <h1>The Burning Leaf</h1>
-            <a value="home">Home</a>
-            <a value="cigars">Cigars</a>
-            <a value="exp">Experience</a>
-            <a value="about">About Us</a>
+            <address class="pn" aria-label="phone number">
+                (757) 292-4823
+            </address>
+            <label for="hamburger" class="mobile-menu">&#9776;</label>
+            <input type="checkbox" id="hamburger">
+            <menu>
+                <li class="socials" value="pass">
+                    <address class="address" 
+                             aria-label="address-icon"
+                             aria-haspopup="true">
+                        <label for="addressCheck" 
+                               aria-flowto="addressA">&#x1f4cc;</label>
+                        <input type="checkbox" id="addressCheck">
+                        <span id="addressA">1730 George Washington Memorial Hwy Suite E, Yorktown, VA 23693</span>
+                    </address>
+                    <a rel="noopener noreferrer"
+                       target="_blank"
+                       href="https://www.facebook.com/The-Burning-Leaf-Cigar-Lounge-100238971575979/">
+                        <img class="icon" src="rsrcs/fb.png">
+                    </a>
+                    <a rel="noopener norefferer"
+                       target="_blank"
+                       href="https://www.instagram.com/theburningleafcigarlounge/">
+                        <img class="icon" src="rsrcs/insta.png">
+                    </a>
+                </li>
+                <li value="home">Home</li>
+                <li value="cigars">Cigars</li>
+                <li value="exp">Experience</li>
+                <li value="about">About Us</li>
+            </menu>
         </nav>
         <div class="rotating-imgs">
             <h1>
-                A relaxing experience<br>
-                Created & Driven<br>
-                By You<br>
-                <span class="tagline">
-                    Your neighborhood cigar lounge
+                <span class="radial-text">A Relaxing Experience</span>
+                <span class="radial-text">Created & Driven</span>
+                <span class="radial-text">By You</span>
+                <span class="tagline radial-text">
+                    Your Neighborhood Cigar Lounge
                 </span>
             </h1>
             <img src="rsrcs/people_burning.jpeg" />
             <img src="rsrcs/cigars.jpeg"/>
             <img src="rsrcs/lounge.jpeg"/>
             <img src="rsrcs/store_front.jpeg"/>
+            <div class="rotating-imgs mobile"></div>
+            <div class="rotating-imgs mobile"></div>
+            <div class="rotating-imgs mobile"></div>
+            <div class="rotating-imgs mobile"></div>
         </div>
         <main data-curr="home">
             <div class="banner left-banner">
-                <img src="rsrcs/2019-Cigar-logos.jpg">
             </div>
             <div class="center">
                 <article>
@@ -50,14 +81,7 @@
             </div>
             <div class="banner right-banner">
                 <section aria-label="contact-banner">
-                    <address>
-                        <span aria-label="phone number">(757) 292-4823</span>
-                        <br>
-                        <span aria-label="address">
-                        1730 George Washington Memorial Hwy Suite E,<br>
-                        Yorktown, VA 23693</span>
-                    </address>
-                    <div class="mapouter">
+                    <!-- <div class="mapouter">
                         <div class="gmap_canvas">
                             <iframe width="300" height="300" id="gmap_canvas" 
                                     src="https://maps.google.com/maps?q=the%20burning%20leaf&t=&z=13&ie=UTF8&iwloc=&output=embed" 
@@ -66,7 +90,7 @@
                             </iframe>
                             <a href="https://www.embedgooglemap.org"></a>
                         </div>
-                    </div>
+                    </div> -->
                 </section>
             </div>
         </main>

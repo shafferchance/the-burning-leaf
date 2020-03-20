@@ -1,10 +1,12 @@
 window.addEventListener("load", () => {
-    const nav = document.querySelector("nav");
-    nav.addEventListener("click", e => {
-        e.preventDefault();
+    const menu = document.querySelector("menu");
+    menu.addEventListener("pointerdown", e => {
+        if(e.srcElement.getAttribute("value") === null) {
+            return;
+        }
         const page = e.srcElement.getAttribute("value");
         const mainContent = document.querySelector(".center");
-        if (mainContent.parentElement.getAttribute("data-curr") === page) {
+        if (mainContent.parentElement.getAttribute("data-curr") === page || page === "pass") {
             return;
         }
         fetch(`pages/${page}.html`)
