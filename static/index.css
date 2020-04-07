@@ -27,6 +27,7 @@ nav .mobile-menu, #hamburger {
 }
 
 nav menu {
+    display: flex;
     list-style-type: none;
     margin: 0;
     padding-right: 1em;
@@ -41,7 +42,6 @@ nav menu {
 }
 
 nav menu li {
-    display: inline-block;
     padding: 0.5em;
     box-sizing: border-box;
     background-color: var(--navbar-background-color);
@@ -50,14 +50,6 @@ nav menu li {
     -moz-user-select: none;
     user-select: none;
 
-}
-
-nav menu li:hover {
-    background-color: #F2F3F4;
-}
-
-nav h1 {
-    padding-left: 1em;
 }
 
 main {
@@ -94,7 +86,34 @@ main {
     width: 1.5em;
 }
 
-.mapouter{
+.icon.location:hover {
+    box-shadow: 2px -1px 4px black;
+    border-radius: 12px;
+}
+
+.icon.facebook:hover {
+    box-shadow: 2px -1px 4px black;
+    border-radius: 12px;
+}
+
+.icon.insta:hover {
+    box-shadow: 2px -1px 4px black;
+    border-radius: 8px;
+}
+
+.nav-info {
+    display: inline-flex;
+}
+
+.nav-info h1 {
+    padding: 0em 1em;
+}
+
+.nav-info .pn {
+    align-self: center;
+}
+
+.mapouter {
     position:relative;
     text-align:right;
     height:300px;
@@ -121,7 +140,7 @@ main {
 }
 
 .right-banner {
-    position: fixed;
+    /* position: fixed; */
     right: 0;
     top: 30%;
     margin-left: 5px;
@@ -215,10 +234,11 @@ main {
 
 .rotating-imgs h1 {
     text-align: center;
-    top: 40vh;
-    left: 40vw;
     position: absolute;
     color: white;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .rotating-imgs img {
