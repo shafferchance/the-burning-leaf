@@ -1,7 +1,7 @@
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
-const MongoStore = require('connect-mongo').MongoStore;
+const MongoStore = require('connect-mongo')(session);
 const path = require('path');
 const uuidv5 = require("uuid/v5");
 const db = require('./logic/database-login');
@@ -9,10 +9,10 @@ const db = require('./logic/database-login');
 const about = require('./controllers/about.controller.js');
 const general = require('./controllers/general.controller.js');
 const inv = require('./controllers/inventory.controller.js');
-const session = require('./logic/session');
 const app = express();
 
 // let url = "mongodb://normie:W3c{}://!@cigar.temporaltech.app/?authSource=admin";
+db.connect();
 
 app.use((req, res, next) => {
     switch (req.method) {
@@ -34,7 +34,7 @@ app.use(session({
     touchAfter: 24 * 3600,
     secret: 'das;ovihd;alsidfagoisgya;osldifasdfpoasdivy;lh',
     store: new MongoStore({
-        ur: process.env.NODE_ENV === 'production' ?
+        url: process.env.NODE_ENV === 'production' ?
                 process.env.DB_CONN_S : process.env.DB_CONN_LOCAL_S
     })
 }));

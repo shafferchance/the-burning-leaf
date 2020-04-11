@@ -28,15 +28,16 @@
 // }
 
 const mongoClient = require("mongodb").MongoClient;
-const { assert } = require('console');
 let mongodb;
 
 function connect () {
+    console.log(process.env.NODE_ENV === 'production' ? 
+    process.env.DB_CONN : process.env.DB_CONN_LOCAL)
     mongoClient.connect(process.env.NODE_ENV === 'production' ? 
                             process.env.DB_CONN : process.env.DB_CONN_LOCAL, {
         poolSize: 10
     }, function(err, db) {
-        assert.equal(null, err);
+        if (err !== null) { throw TypeError(err); }
         mongodb = db;
     });
 }
