@@ -1,8 +1,4 @@
-import DBConnect from './database-login'
-
-const connectAttempt = DBConnect()
-                        .then(x => x)
-                        .catch(err => console.error(err));
+const db = require("./database-login");
 
 function Location (address) {
     this.address = address;
@@ -33,36 +29,82 @@ function Amenity (name, desc, pic) {
     this.pic = pic;
 }
 
-function mongoGET (collection, query) {
-    return connectAttempt.then(db => {
-        if (query === undefined) {
-            return db.collection(collection).find()
-        }
-        return db.collection(collection).find(query);
-    });
-}
-
-function mongoUPDATE (collection, query, newVal, opts) {
-    return connectAttempt.then(db => {
-        db.collection(collection).findOneAndUpdate(query, newVal, opts, res => {
-            return res
-        });
+function mongoAggregate (collection, aggregate) {
+    return new Promise((res, rej) => {
+        db.get()
+          .collection(collection)
+          .aggregate(aggregate, (err, result) => {
+              if (result !== null) { rej(err); }
+              res(result);
+          })
     });
 }
 
 function mongoDELETE (collection, query, opts) {
-    return db.collection(collection).findOneAndDelete(query, opts, res => {
-        return res;
+    return new Promise((res, rej) => {
+        db.get()
+          .collection(collection)
+          .findOneAndDelete(query, opts, (err, result) => {
+            if (result !== null) { rej(err); }
+            res(result);
+        });
+    });
+}
+
+function mongoGET (collection, query) {
+    return new Promise((res, rej) => {
+        db.get()
+          .collection(collection)
+          .find(query === undefined ? {} : query, (err, result) => {
+            if (err !== null) { rej(err); }
+            res(result);
+        });
     });
 }
 
 function mongoGETOne (collection, query, opts) {
-    return db.collection(collection).findOne(query, opts, res => {
-        return res
+    return new Promise((res, rej) => {
+        db.get()
+          .collection(collection)
+          .findOne(query, opts, (err, result) => {
+            if (result !== null) { rej(err); }
+            res(result);
+        });
+    });
+}
+
+function mongoInsert (collection, entries) {
+    return new Promise((res, rej) => {
+        if (entries instanceof Array) {
+            db.get()
+              .collection(collection)
+              .insertMany(entries, (err, result) => {
+                  if (err !== null) { rej(err); }
+                  res(result);
+              });
+        }
+        db.get()
+          .collection(collection)
+          .insertOne(entries, (err, result) => {
+            if (err !== null) { rej(err); }
+            res(result);
+          });
+    })
+}
+
+function mongoUPDATE (collection, query, newVal, opts = {}) {
+    return new Promise((res, rej) => {
+        db.get()
+          .collection(collection)
+          .findOneAndUpdate(query, newVal, opts, (err, result) => {
+                if (err !== null) { rej(err); }
+                res(result);
+        });
     });
 }
 
 module.exports = {
     Location, Event, Announcement, Amenity, DayHours,
-    mongoGET, mongoGETOne, mongoUPDATE, mongoDELETE
+    mongoGET, mongoGETOne, mongoUPDATE, mongoDELETE,
+    mongoAggregate, mongoUPDATE, mongoInsert
 }

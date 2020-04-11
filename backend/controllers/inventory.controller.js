@@ -1,24 +1,62 @@
 const inv = require("express").Router();
+const invLogic = require("../logic/invLogic");
+
+inv.get("/product", (req, res, next) => {
+    invLogic.getProduct(req.body.id, (err, result) => {
+        if (err !== null) { next(err); }
+        res.statusCode = 200;
+        res.append("data", JSON.stringify(result));
+        res.end();
+    });
+});
 
 inv.get("/products", (req, res, next) => {
-
+    invLogic.getProducts((err, result) => {
+        if (err !== null) { next(err); }
+        res.statusCode = 200;
+        res.append("data", JSON.stringify(result));
+        res.end();
+    });
 });
 
 inv.post("/products", (req, res, next) => {
-
+    if (!req.session.user) { next(err); }
+    invLogic.insertProduct(req.body.data, (err, result) => {
+        if (err !== null) { next(err); }
+        res.statusCode = 200;
+        res.append("data", JSON.stringify(result));
+        res.end();
+    });
 });
 
-inv.patch("/products", (req, res, next) => {
-
+inv.put("/products", (req, res, next) => {
+    if (!req.session.user) { next(err); }
+    invLogic.updateProduct(req.body.id, req.body.data, (err, result) => {
+        if (err !== null) { next(err); }
+        res.statusCode = 200;
+        res.append("data", JSON.stringify(result));
+        res.end();
+    });
 });
 
 inv.delete("/products", (req, res, next) => {
-
+    if(!req.session.user) { next(err); }
+    invLogic.deleteProduct(req.body.id, (err, result) => {
+        if (err !== null) { next(err); }
+        res.statusCode = 200;
+        res.append("data", JSON.stringify(result));
+        res.end();
+    });
 });
 
 // GET only since this will be a tag query!
 inv.get("/products/popular", (req, res, next) => {
-
+    invLogic.getPopular((err, result) => {
+        if (err !== null) { next(err); }
+        res.statusCode = 200;
+        res.append("data", JSON.stringify(result));
+        res.end();
+    });
 });
 
 module.exports = inv;
