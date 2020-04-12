@@ -1,4 +1,4 @@
-const db = require("./database-login");
+const dbConn = require("./database-login");
 
 function Location (address) {
     this.address = address;
@@ -31,7 +31,7 @@ function Amenity (name, desc, pic) {
 
 function mongoAggregate (collection, aggregate) {
     return new Promise((res, rej) => {
-        db.get()
+        dbConn.get()
           .collection(collection)
           .aggregate(aggregate, (err, result) => {
               if (result !== null) { rej(err); }
@@ -42,7 +42,7 @@ function mongoAggregate (collection, aggregate) {
 
 function mongoDELETE (collection, query, opts) {
     return new Promise((res, rej) => {
-        db.get()
+        dbConn.get()
           .collection(collection)
           .findOneAndDelete(query, opts, (err, result) => {
             if (result !== null) { rej(err); }
@@ -53,7 +53,7 @@ function mongoDELETE (collection, query, opts) {
 
 function mongoGET (collection, query) {
     return new Promise((res, rej) => {
-        db.get()
+        dbConn.get()
           .collection(collection)
           .find(query === undefined ? {} : query, (err, result) => {
             if (err !== null) { rej(err); }
@@ -64,7 +64,7 @@ function mongoGET (collection, query) {
 
 function mongoGETOne (collection, query, opts) {
     return new Promise((res, rej) => {
-        db.get()
+        dbConn.get()
           .collection(collection)
           .findOne(query, opts, (err, result) => {
             if (result !== null) { rej(err); }
@@ -76,14 +76,14 @@ function mongoGETOne (collection, query, opts) {
 function mongoInsert (collection, entries) {
     return new Promise((res, rej) => {
         if (entries instanceof Array) {
-            db.get()
+            dbConn.get()
               .collection(collection)
               .insertMany(entries, (err, result) => {
                   if (err !== null) { rej(err); }
                   res(result);
               });
         }
-        db.get()
+        dbConn.get()
           .collection(collection)
           .insertOne(entries, (err, result) => {
             if (err !== null) { rej(err); }
@@ -94,7 +94,7 @@ function mongoInsert (collection, entries) {
 
 function mongoUPDATE (collection, query, newVal, opts = {}) {
     return new Promise((res, rej) => {
-        db.get()
+        dbConn.get()
           .collection(collection)
           .findOneAndUpdate(query, newVal, opts, (err, result) => {
                 if (err !== null) { rej(err); }

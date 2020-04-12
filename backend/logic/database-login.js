@@ -35,10 +35,11 @@ function connect () {
     process.env.DB_CONN : process.env.DB_CONN_LOCAL)
     mongoClient.connect(process.env.NODE_ENV === 'production' ? 
                             process.env.DB_CONN : process.env.DB_CONN_LOCAL, {
-        poolSize: 10
-    }, function(err, db) {
+        poolSize: 10,
+        useUnifiedTopology: true
+    }, function(err, client) {
         if (err !== null) { throw TypeError(err); }
-        mongodb = db;
+        mongodb = client.db("cigarShop");
     });
 }
 
