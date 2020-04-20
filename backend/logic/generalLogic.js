@@ -1,4 +1,5 @@
 const dbCrud = require('./database-crud');
+const bcrypt = require('bcrypt');
 
 //  -------------------------- Announcement CRUD ---------------------------
 
@@ -138,9 +139,21 @@ function updateLandingPicture (id ,data, cb) {
     .catch(err => cb(err, null));
 }
 
+function login (user, pass, cb) {
+    dbCrud.mongoGETOne("users", {'email': user})
+          .then(result => {
+              bcrypt.compare(result.pass, pass, function (err, same) {
+                  if (err) cb(err, null);
+                  cb(null, same);
+              })
+          })
+          .catch(err => cb(err, null));
+}
+
 module.exports = {
     deleteAnnouncements, getAnnouncement, getAnnouncements, insertAnnouncement, updateAnnouncement,
     deleteContact, getContact, insertContact, updateContact,
     deleteEvent, getEvent, getEvents, insertEvent, updateEvent,
-    deleteLandingPicture, getLandingPicture, insertLandingPicture, updateLandingPicture
+    deleteLandingPicture, getLandingPicture, insertLandingPicture, updateLandingPicture,
+    login
 }

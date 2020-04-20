@@ -12,7 +12,7 @@ about.get('/about', (req, res, next) => {
 });
 
 about.patch('/about', (req, res, next) => {
-    if (!req.session.user) { next("Please Login"); }
+    if (!req.session.authenticated) { next("Please Login"); }
     aboutLogic.updateAbout(req.body.data, (err, result) => {
         if (err !== null) { next(err); }
         res.statusCode = 200;
@@ -35,7 +35,7 @@ about.get('/hours', (req, res, next) => {
 });
 
 about.patch('/hours', (req, res, next) => {
-    if (!req.session.user) { next("Please Login"); }
+    if (!req.session.authenticated) { next("Please Login"); }
     aboutLogic.updateAbout(req.body.data, (err, result) => {
         if (err !== null) { next(err); }
         res.statusCode = 200;
@@ -58,7 +58,7 @@ about.get("/location", (req, res, next) => {
 });
 
 about.put("/location", (req, res, next) => {
-    if (!req.session.user) { next("Please Login"); }
+    if (!req.session.authenticated) { next("Please Login"); }
     aboutLogic.updateLocation(req.body.data, (err, result) => {
         if (err !== null) { next(err); }
         res.statusCode = 200;
@@ -69,7 +69,7 @@ about.put("/location", (req, res, next) => {
 });
 
 about.delete("/amenties", (req, res, next) => {
-    if (!req.session.user) { next("Please Login"); }
+    if (!req.session.authenticated) { next("Please Login"); }
     aboutLogic.deleteAmenity(req.body.id, (err, result) => {
         if (err !== null) { next(err); }
         res.statusCode = 200;
@@ -90,7 +90,7 @@ about.get("/amenties", (req, res, next) => {
 });
 
 about.post("/amenties", (req, res, next) => {
-    if (!req.session.user) { next("Please Login"); }
+    if (!req.session.authenticated) { next("Please Login"); }
     aboutLogic.postAmenity(req.body.data, (err, result) => {
         if (err !== null) { next(err); }
         res.statusCode = 200;
@@ -101,7 +101,7 @@ about.post("/amenties", (req, res, next) => {
 });
 
 about.put("/amenties", (req, res, next) => {
-    if (!req.session.user) { next("Please Login"); }
+    if (!req.session.authenticated) { next("Please Login"); }
     aboutLogic.updateAmenity(req.body.id, req.body.data, (err, result) => {
         if (err !== null) { next(err); }
         res.statusCode = 200;

@@ -22,7 +22,7 @@ inv.get("/products", (req, res, next) => {
 });
 
 inv.post("/products", (req, res, next) => {
-    if (!req.session.user) { next(err); }
+    if (!req.session.authenticated) { next(err); }
     invLogic.insertProduct(req.body.data, (err, result) => {
         if (err !== null) { next(err); }
         res.statusCode = 200;
@@ -33,7 +33,7 @@ inv.post("/products", (req, res, next) => {
 });
 
 inv.put("/products", (req, res, next) => {
-    if (!req.session.user) { next(err); }
+    if (!req.session.authenticated) { next(err); }
     invLogic.updateProduct(req.body.id, req.body.data, (err, result) => {
         if (err !== null) { next(err); }
         res.statusCode = 200;
@@ -44,7 +44,7 @@ inv.put("/products", (req, res, next) => {
 });
 
 inv.delete("/products", (req, res, next) => {
-    if(!req.session.user) { next(err); }
+    if(!req.session.authenticated) { next(err); }
     invLogic.deleteProduct(req.body.id, (err, result) => {
         if (err !== null) { next(err); }
         res.statusCode = 200;

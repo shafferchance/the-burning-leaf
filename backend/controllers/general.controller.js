@@ -2,7 +2,7 @@ const general = require('express').Router();
 const generalLogic = require('../logic/generalLogic');
 
 general.delete("/announcements", (req, res, next) => {
-    if (!req.session.user) { next("Please login"); }
+    if (!req.session.authenticated) { next("Please login"); }
     generalLogic.deleteAnnouncement(req.body.id, (err, result) => {
         if (err !== null) { next(err); }
         res.status(200);
@@ -33,7 +33,7 @@ general.get("/announcements", (req, res, next) => {
 });
 
 general.post("/announcements", (req, res, next) => {
-    if (!req.session.user) { next("Please login"); }
+    if (!req.session.authenticated) { next("Please login"); }
     generalLogic.insertAnnouncement(req.body.data, (err, result) => {
         if (err !== null) { return next(err); }
         res.status(200);
@@ -44,7 +44,7 @@ general.post("/announcements", (req, res, next) => {
 });
 
 general.put("/announcements", (req, res, next) => {
-    if (!req.session.user) { next("Please login"); }
+    if (!req.session.authenticated) { next("Please login"); }
     generalLogic.updateAnnouncement(req.body.id, (err, result) => {
         if (err !== null) { return next(err); }
         res.status(200);
@@ -55,7 +55,7 @@ general.put("/announcements", (req, res, next) => {
 });
 
 general.delete("/contact", (req, res, next) => {
-    if (!req.session.user) { next("Please login"); }
+    if (!req.session.authenticated) { next("Please login"); }
     generalLogic.deleteContact(req.body.id, (err, result) => {
         if (err !== null) { return next(err); }
         res.status(200);
@@ -76,7 +76,7 @@ general.get("/contact", (req, res, next) => {
 });
 
 general.post("/contact", (req, res, next) => {
-    if (!req.session.user) { next("Please login"); }
+    if (!req.session.authenticated) { next("Please login"); }
     generalLogic.insertContact(req.body.data, (err, result) => {
         if (err !== null) { return next(err); }
         res.status(200);
@@ -87,7 +87,7 @@ general.post("/contact", (req, res, next) => {
 });
 
 general.put("/contact", (req, res, next) => {
-    if (!req.session.user) { next("Please login"); }
+    if (!req.session.authenticated) { next("Please login"); }
     generalLogic.updateContact(req.body.id, req.body.data, (err, result) => {
         if (err !== null) { return next(err); }
         res.status(200);
@@ -98,7 +98,7 @@ general.put("/contact", (req, res, next) => {
 });
 
 general.delete("/event", (req, res, next) => {
-    if (!req.session.user) { next("Please login"); }
+    if (!req.session.authenticated) { next("Please login"); }
     generalLogic.deleteEvent(req.body.id, (err, result) => {
         if (err !== null) { return next(err); }
         res.status(200);
@@ -128,7 +128,7 @@ general.get("/events", (req, res, next) => {
 });
 
 general.post("/events", (req, res, next) => {
-    if (!req.session.user) { next("Please login"); }
+    if (!req.session.authenticated) { next("Please login"); }
     generalLogic.insertEvent(req.body.data, (err, result) => {
         if (err !== null) { return next(err); }
         res.status(200);
@@ -150,7 +150,7 @@ general.put("/events", (req, res, next) => {
 });
 
 general.delete("/landing_pictures", (req, res, next) => {
-    if (!req.session.user) { next("Please login"); }
+    if (!req.session.authenticated) { next("Please login"); }
     generalLogic.deleteLandingPicture(req.body.id, (err, result) => {
         if (err !== null) { return next(err); }
         res.status(200);
@@ -171,7 +171,7 @@ general.get("/landing_pictures", (req, res, next) => {
 });
 
 general.post("/landing_pictures", (req, res, next) => {
-    if (!req.session.user) { next("Please Login"); }
+    if (!req.session.authenticated) { next("Please login"); }
     generalLogic.insertLandingPicture(req.body.data, (err, result) => {
         if (err !== null) { return next(err); }
         res.status(200);
@@ -182,7 +182,7 @@ general.post("/landing_pictures", (req, res, next) => {
 });
 
 general.put("/landing_pictures", (req, res, next) => {
-    if (!req.session.user) { next("Please login"); }
+    if (!req.session.authenticated) { next("Please login"); }
     generalLogic.updateLandingPicture(req.body.id, req.body.data, (err, result) => {
         if (err !== null) { next(err); }
         res.write(JSON.stringify({"data": result}));
@@ -192,7 +192,19 @@ general.put("/landing_pictures", (req, res, next) => {
 });
 
 general.post("/login", (req, res, next) => {
-    generalLogic.login
+    generalLogic.login(req.body.user, req.body.pword, (err, same) => {
+        if (err !== null) next(err);
+        if (same === true) {
+            req.session.authenticated = true;
+            res.write("success");
+            res.status(200);
+            res.end();
+        } else {
+            res.write("Failed to login");
+            res.status(403);
+            res.end();
+        }
+    })
 });
 
 module.exports = general;

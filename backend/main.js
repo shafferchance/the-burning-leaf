@@ -2,6 +2,7 @@ const dotenv = require("dotenv");
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
+const mongoSanitize = require('express-mongo-sanitize');
 const MongoStore = require('connect-mongo')(session);
 const { v4: uuidv5 } = require('uuid');
 
@@ -20,18 +21,18 @@ const app = express();
 // let url = "mongodb://normie:W3c{}://!@cigar.temporaltech.app/?authSource=admin";
 db.connect();
 
-// app.use((req, res, next) => {
-//     switch (req.method) {
-//         case 'OPTIONS':
-//             res.append('Access-Control-Allow-Origin', ["https://cigar.temporaltech.app", "*"]);
-//             res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-//             res.append('Access-Control-Allow-Headers','Content-Type,X-Session');
-//             break;
-//         default:
-//             res.append('Access-Control-Allow-Origin', ["https://cigar.temporaltech.app", "*"]);
-//     }
-//     next();
-// });
+app.use((req, res, next) => {
+    switch (req.method) {
+        case 'OPTIONS':
+            res.append('Access-Control-Allow-Origin', ["https://cigar.temporaltech.app", "*"]);
+            res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+            res.append('Access-Control-Allow-Headers','Content-Type,X-Session');
+            break;
+        default:
+            res.append('Access-Control-Allow-Origin', ["https://cigar.temporaltech.app", "*"]);
+    }
+    next();
+});
 
 app.use(session({
     genid: function (req) {
@@ -47,8 +48,10 @@ app.use(session({
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(mongoSanitize({
+    replaceWith: '_'
+}));
 
-// TODO: Add SSE support for events, announcements, or stock changes
 app.use((req, res, next) => {
     console.log(req.path);
     next();
