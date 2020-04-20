@@ -1,0 +1,24 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}\\backend\\main.js",
+            "env": {
+                "DB_CONN_LOCAL": "mongodb://rooty:yhn106#!@192.168.0.19/cigarShop?authSource=admin",
+                "DB_CONN": "mongodb://normie:W3c{}://!@cigar.temporaltech.app/cigarShop?authSource=admin",
+                "DB_CONN_LOCAL_S": "mongodb://rooty:yhn106#!@192.168.0.19/sessions?authSource=admin",
+                "DB_CONN_S": "mongodb://normie:W3c{}://!@cigar.temporaltech.app/sessions?authSource=admin",
+                "NODE_ENV": "VS_CODE"
+            }
+        }
+    ]
+}

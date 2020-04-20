@@ -16,6 +16,6 @@ window.addEventListener("load", () => {
                 const doc = parser.parseFromString(data, "text/html");
                 mainContent.parentElement.setAttribute("data-curr", page);
                 mainContent.replaceWith(doc.body.querySelector(".center"));
-            })
+            });
     });
 });

@@ -371,6 +371,47 @@ main {
     background: radial-gradient(rgba(217,119,0,0.5), transparent);
 } */
 
+.spinning-loader {
+	width: 20px;
+	height: 20px;
+
+	border: 5px solid rgba(29, 161, 242, 0.2);
+	border-left-color: rgb(29, 161, 242);;
+	border-radius: 50%;
+	background: transparent;
+
+	animation: 1s linear 0s infinite rotate-loader;
+	-moz-animation: 1s linear 0s infinite rotate-loader;
+	-webkit-animation: 1s linear 0s infinite rotate-loader;
+}
+
+@keyframes rotate-loader {
+	from {
+		transform: rotate(0);
+	} 
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@-moz-keyframes rotate-loader {
+	from {
+		-moz-transform: rotate(0);
+	}
+	to {
+		-moz-transform: rotate(360deg);
+	}
+}
+
+@-webkit-keyframes rotate-loader {
+	from {
+		-webkit-transform: rotate(0);
+	}
+	to {
+		-webkit-transform: rotate(360deg);
+	}
+}
+
 @media screen and (max-width: 768px) {
     .pn {
         font-size: 0.75em;
@@ -435,7 +476,7 @@ main {
         box-shadow: 0.3em 0.2em 0.3em black;
     }
 
-    nav menu:after {
+    nav menu::after {
         height: 1em;
         width: 100%;
         background: var(--navbar-background-color);
@@ -445,4 +486,3 @@ main {
         left: 0;
     }
 }
-
