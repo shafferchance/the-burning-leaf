@@ -393,7 +393,7 @@ $(window).on("load", function() {
         };
         sendToServer("api/v1/general/login", JSON.stringify(body), "POST")
             .then(result => {
-                if (result === "success") {
+                if (result.result === "success") {
                     $("#login").modal('hide');
                     Promise.all([
                         sendToServer("api/v1/general/landing_pictures").then(raw => raw.json()),

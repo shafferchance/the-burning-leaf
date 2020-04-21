@@ -140,7 +140,7 @@ function updateLandingPicture (id ,data, cb) {
 }
 
 function login (user, pass, cb) {
-    dbCrud.mongoGET("users", {'user': user})
+    dbCrud.mongoGETOne("users", {"user": user}, {})
           .then(result => {
 	      console.log(result);
               bcrypt.compare(pass, result.pass, (err, same) => {

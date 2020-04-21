@@ -57,12 +57,7 @@ function mongoGET (collection, query) {
           .collection(collection)
           .find(query === undefined ? {} : query, (err, result) => {
             if (err !== null) { rej(err); }
-            result.hasNext(next => {
-                if (!next) {
-                    rej({"err":"None found"});
-                }
-                result.next(data => res(data));
-            });
+            result.toArray().then(val => res(val));
         });
     });
 }
@@ -72,13 +67,10 @@ function mongoGETOne (collection, query, opts) {
         dbConn.get()
           .collection(collection)
           .findOne(query, opts, (err, result) => {
-            if (result !== null) { rej(err); }
-            result.hasNext(next => {
-                if (!next) {
-                    rej({"err":"None found"});
-                }
-                result.next(data => res(data));
-            });
+            if (err) { rej(err); }
+	    //console.log(query);
+	    //console.log(result);
+            res(result);
         });
     });
 }
