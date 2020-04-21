@@ -4,7 +4,7 @@ let events;
 let announces;
 
 function sendToServer (path, body, method = "GET", headers = {'content-type':'application/json'}) {
-    return fetch(`http://${window.location.host}/${path}`, {
+    return fetch(`https://${window.location.host}/${path}`, {
         method: method,
         body: method === "GET" ? undefined : body,
         headers: headers

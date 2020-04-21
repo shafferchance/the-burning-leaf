@@ -54,5 +54,5 @@ let announcePoll = new Worker("./polling.js");
 evePoll.addEventListener("message", renderEvents);
 announcePoll.addEventListener("message", renderAnnounce);
 
-evePoll.postMessage({type: "startPoll", url: `http://${window.location.host}/api/v1/general/events`});
-announcePoll.postMessage({type: "startPoll", url: `http://${window.location.host}/api/v1/general/announcements`});
+evePoll.postMessage({type: "startPoll", url: `https://${window.location.host}/api/v1/general/events`});
+announcePoll.postMessage({type: "startPoll", url: `https://${window.location.host}/api/v1/general/announcements`});

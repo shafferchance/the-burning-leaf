@@ -56,4 +56,4 @@ let wrkr = new Worker("./polling.js");
 
 wrkr.addEventListener("message", handleMessage);
 
-wrkr.postMessage({type: "startPoll", url: `http://${window.location.host}/api/v1/inv/products`});
+wrkr.postMessage({type: "startPoll", url: `https://${window.location.host}/api/v1/inv/products`});

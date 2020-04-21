@@ -23,7 +23,7 @@ export const NavBar = () => {
         window.history.pushState(
             {},
             undefined,
-            `http://${window.location.host}/${e.target.value === "Landing" ? undefined : e.target.value}`);
+            `https://${window.location.host}/${e.target.value === "Landing" ? undefined : e.target.value}`);
         setCurrEle(e.target.value);
     }
 
