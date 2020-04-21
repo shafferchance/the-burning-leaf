@@ -65,10 +65,10 @@ app.use('/api/v1/inv', inv);
 //     res.end();
 // });
 
-app.listen(3000, () => console.log("Listening on port 3000"));
-/*https.createServer({
+// app.listen(8000, () => console.log("Listening on port 8000"));
+https.createServer({
     key: fs.readFileSync(process.env.NODE_ENV === 'VS_CODE' ?
-                            "backend\\server.key" : "/etc/letsencrypt/live/cigar.temporaltech.app/privkey.pem"),
+                            "backend\\server.key" : "server.key"),
     cert: fs.readFileSync(process.env.NODE_ENV === 'VS_CODE' ?
-                            "backend\\server.cert" : "/etc/letsencrypt/live/cigar.temporaltech.app/fullchain.pem")
-}, app).listen(() => console.log("Listening on 443"));*/
+                            "backend\\server.cert" : "server.cert")
+}, app).listen(8443, () => console.log("Listening on 8443"));

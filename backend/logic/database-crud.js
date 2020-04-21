@@ -46,7 +46,7 @@ function mongoDELETE (collection, query, opts) {
           .collection(collection)
           .findOneAndDelete(query, opts, (err, result) => {
             if (result !== null) { rej(err); }
-            res(result);
+            res(result.deletedCount);
         });
     });
 }
@@ -57,7 +57,12 @@ function mongoGET (collection, query) {
           .collection(collection)
           .find(query === undefined ? {} : query, (err, result) => {
             if (err !== null) { rej(err); }
-            res(result);
+            result.hasNext(next => {
+                if (!next) {
+                    rej({"err":"None found"});
+                }
+                result.next(data => res(data));
+            });
         });
     });
 }
@@ -68,7 +73,12 @@ function mongoGETOne (collection, query, opts) {
           .collection(collection)
           .findOne(query, opts, (err, result) => {
             if (result !== null) { rej(err); }
-            res(result);
+            result.hasNext(next => {
+                if (!next) {
+                    rej({"err":"None found"});
+                }
+                result.next(data => res(data));
+            });
         });
     });
 }
@@ -80,14 +90,14 @@ function mongoInsert (collection, entries) {
               .collection(collection)
               .insertMany(entries, (err, result) => {
                   if (err !== null) { rej(err); }
-                  res(result);
+                  res(result.insertedCount);
               });
         }
         dbConn.get()
           .collection(collection)
           .insertOne(entries, (err, result) => {
             if (err !== null) { rej(err); }
-            res(result);
+            res(result.insertedCount);
           });
     })
 }
@@ -98,7 +108,7 @@ function mongoUPDATE (collection, query, newVal, opts = {}) {
           .collection(collection)
           .findOneAndUpdate(query, newVal, opts, (err, result) => {
                 if (err !== null) { rej(err); }
-                res(result);
+                res(result.modifiedCount);
         });
     });
 }
