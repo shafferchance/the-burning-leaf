@@ -118,13 +118,13 @@ function dateFactory(date) {
 }
 
 function tableRowFactroy (...row) {
-    const row = document.createElement("tr");
+    const rowEle = document.createElement("tr");
     for (const eles of row) {
         const td = document.createElement("td");
         td.setAttribute("contenteditable")
-        row.append(eles);
+        rowEle.append(eles);
     }
-    return row;
+    return rowEle;
 }
 
 function deleteEvent (e) {
@@ -382,7 +382,7 @@ function idGen () {
     return '_' + Math.random().toString(12).substring(2,9);
 }    
 
-$(window).load(function() {
+$(window).on("load", function() {
     $("#login").modal('show');
     $("#loginModalForm").submit(function (e){
         e.preventDefault();
