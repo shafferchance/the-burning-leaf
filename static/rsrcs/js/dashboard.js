@@ -386,9 +386,10 @@ $(window).on("load", function() {
     $("#login").modal('show');
     $("#loginModalForm").submit(function (e){
         e.preventDefault();
+	console.log(e);
         let body = {
-            user: e.target[0],
-            pword: e.target[1]
+            user: e.target[0].value,
+            pword: e.target[1].value
         };
         sendToServer("api/v1/general/login", JSON.stringify(body), "POST")
             .then(result => {
@@ -420,3 +421,4 @@ $(window).on("load", function() {
             })
     });
 });
+

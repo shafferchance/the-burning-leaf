@@ -192,7 +192,10 @@ general.put("/landing_pictures", (req, res, next) => {
 });
 
 general.post("/login", (req, res, next) => {
+    console.log(req.body);
     generalLogic.login(req.body.user, req.body.pword, (err, same) => {
+	console.log(err);
+	console.log(same);
         if (err !== null) next(err);
         if (same === true) {
             req.session.authenticated = true;

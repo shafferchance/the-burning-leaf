@@ -14,7 +14,9 @@ bcrypt.genSalt(SALT, function(err, salt) {
     bcrypt.hash(pass, salt, function (err, hash) {
         if (err) throw err;
         crud.mongoInsert("users", {"user": usr, "pass": hash})
-            .then(res => console.log(res))
+            .then(res => {console.log(res); db.close()})
             .catch(err => console.error(err));
     })
 });
+
+
