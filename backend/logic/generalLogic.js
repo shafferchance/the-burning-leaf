@@ -126,7 +126,7 @@ function getLandingPicture (cb) {
 }
 
 function insertLandingPicture (data, cb) {
-    dbCrud.mongoInsert("landing_pictures", data)
+    dbCrud.mongoInsert("landing_pictures", { name: data.name, idx: data.idx, data: data.data})
           .then(result => cb(null, result))
           .catch(err => cb(err, null));
 }

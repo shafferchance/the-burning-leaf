@@ -121,8 +121,15 @@ function tableRowFactroy (...row) {
     const rowEle = document.createElement("tr");
     for (const eles of row) {
         const td = document.createElement("td");
-        td.setAttribute("contenteditable")
-        rowEle.append(eles);
+        if (eles instanceof String) {
+            const span = document.createElement("span");
+            span.setAttribute("contenteditable","true");
+            td.append(span);
+        } else if (eles instanceof Element) {
+            td.append(eles);
+        }
+        //td.setAttribute("contenteditable","true");
+        rowEle.append(td);
     }
     return rowEle;
 }
@@ -177,20 +184,22 @@ function addEvents (e) {
     td.append(dateFactory()); td2.append(span);
     tr.append(td); 
     tr.append(td2);
-    row.addEventListener("focusout", sumbitEvent);
-    target.parentElement.append(row);
-    row.focus();
+    tr.addEventListener("focusout", sumbitEvent);
+    target.parentElement.append(tr);
+    tr.focus();
 }
 
 function renderEvents (events) {
-    let contain = document.querySelector("#announceContain");
+    let contain = document.querySelector("#eveContain");
     let frag = document.createDocumentFragment();
-    for(const ele of events) {
-        let row = tableRowFactroy(ele.img, ele.brand, ele.desc, input);
-        row.setAttribute("data-id",ele.id);
-        row.addEventListener("click", preconfigDeleteEvent)
-        row.addEventListener("focusout", sumbitEvent);
-        frag.append(row);
+    if (events) {
+        for(const ele of events) {
+            let row = tableRowFactroy(ele.img, ele.brand, ele.desc, input);
+            row.setAttribute("data-id",ele.id);
+            row.addEventListener("click", preconfigDeleteEvent)
+            row.addEventListener("focusout", sumbitEvent);
+            frag.append(row);
+        }
     }
     let add = document.createElement("span");
     add.innerHTML = "&#10133;";
@@ -249,22 +258,24 @@ function addAnnouncement (e) {
     td.append(dateFactory()); td2.append(span);
     tr.append(td); 
     tr.append(td2);
-    row.addEventListener("focusout", sumbitAnnouncement);
-    target.parentElement.append(row);
-    row.focus();
+    tr.addEventListener("focusout", sumbitAnnouncement);
+    target.parentElement.append(tr);
+    tr.focus();
 }
 
 function renderAnnouncments (announcements) {
     let contain = document.querySelector("#announceContain");
     let frag = document.createDocumentFragment();
-    for(const ele of announcements) {
-        let td = document.createElement("td");
-        td.append(dateFactory(ele.date));
-        let row = tableRowFactroy(ele.msg);
-        row.setAttribute("data-id",ele.id);
-        row.addEventListener("click", preconfigDeleteAnnounce);
-        row.append(td);
-        frag.append(row);
+    if (announcements !== null) {
+        for(const ele of announcements) {
+            let td = document.createElement("td");
+            td.append(dateFactory(ele.date));
+            let row = tableRowFactroy(ele.msg);
+            row.setAttribute("data-id",ele.id);
+            row.addEventListener("click", preconfigDeleteAnnounce);
+            row.append(td);
+            frag.append(row);
+        }
     }
     let add = document.createElement("span");
     add.innerHTML = "&#10133;";
@@ -352,7 +363,7 @@ function addCigar (e) {
     const input = document.createElement("input");
     input.setAttribute("data-id", "tmp");
     input.addEventListener("change", cigarUpload);
-    let row = tableRowFactroy("", "", "", input);
+    let row = tableRowFactroy(input, "", "", "");
     row.addEventListener("focusout", sumbitCigar);
     target.parentElement.append(row);
     row.focus();
@@ -361,15 +372,17 @@ function addCigar (e) {
 function renderCigars (cigars) {
     let contain = document.querySelector("#cigarContain");
     let frag = document.createDocumentFragment();
-    for(const ele of cigars) {
-        const input = document.createElement("input");
-        input.setAttribute("data-id", ele.id);
-        input.addEventListener("change", cigarUpload);
-        let row = tableRowFactroy(ele.img, ele.brand, ele.desc, input);
-        row.setAttribute("data-id",ele.id);
-        row.addEventListener("click", preconfigDeleteCigar);
-        row.addEventListener("focusout", sumbitCigar);
-        frag.append(row);
+    if (cigars !== null) {
+        for(const ele of cigars) {
+            const input = document.createElement("input");
+            input.setAttribute("data-id", ele.id);
+            input.addEventListener("change", cigarUpload);
+            let row = tableRowFactroy(ele.img, ele.brand, ele.desc, input);
+            row.setAttribute("data-id",ele.id);
+            row.addEventListener("click", preconfigDeleteCigar);
+            row.addEventListener("focusout", sumbitCigar);
+            frag.append(row);
+        }
     }
     let add = document.createElement("span");
     add.innerHTML = "&#10133;";
@@ -396,24 +409,24 @@ $(window).on("load", function() {
                 if (result.result === "success") {
                     $("#login").modal('hide');
                     Promise.all([
-                        sendToServer("api/v1/general/landing_pictures").then(raw => raw.json()),
-                        sendToServer("api/v1/general/events").then(raw => raw.json()),
-                        sendToServer("api/v1/general/announcements").then(raw => raw.json()),
-                        sendToServer("api/v1/inv/products").then(raw => raw.json())
+                        sendToServer("api/v1/general/landing_pictures"),
+                        sendToServer("api/v1/general/events"),
+                        sendToServer("api/v1/general/announcements"),
+                        sendToServer("api/v1/inv/products")
                     ]).then(results => {
-                        landing_pics = results[0];
-                        events = results[1];
-                        announces = results[2];
-                        cigars = results[3];
+                        landing_pics = results[0].data;
+                        events = results[1].data;
+                        announces = results[2].data;
+                        cigars = results[3].data;
                     
                         console.log("Rendering Carosuel");
-                        renderCarousel(landing_pics);
+                        renderCarousel(landing_pics || []);
                         console.log("Rendering Events");
-                        renderEvents(events);
+                        renderEvents(events || []);
                         console.log("Rendering Announcements");
-                        renderAnnouncments(announces);
+                        renderAnnouncments(announces || []);
                         console.log("Rendering Cigars");
-                        renderCigars(cigars);
+                        renderCigars(cigars || []);
                     });
                 } else {
                     alert("Invalid username and password");

@@ -172,7 +172,7 @@ general.get("/landing_pictures", (req, res, next) => {
 
 general.post("/landing_pictures", (req, res, next) => {
     if (!req.session.authenticated) { next("Please login"); }
-    generalLogic.insertLandingPicture(req.body.data, (err, result) => {
+    generalLogic.insertLandingPicture(req.body, (err, result) => {
         if (err !== null) { return next(err); }
         res.status(200);
         res.write(JSON.stringify({"data": result}));

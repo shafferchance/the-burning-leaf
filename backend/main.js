@@ -24,12 +24,12 @@ db.connect();
 app.use((req, res, next) => {
     switch (req.method) {
         case 'OPTIONS':
-            res.append('Access-Control-Allow-Origin', ["https://cigar.temporaltech.app", "*"]);
+            res.append('Access-Control-Allow-Origin',"*");
             res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
             res.append('Access-Control-Allow-Headers','Content-Type,X-Session');
             break;
         default:
-            res.append('Access-Control-Allow-Origin', ["https://cigar.temporaltech.app", "*"]);
+            res.append('Access-Control-Allow-Origin', "*");
     }
     next();
 });
@@ -46,6 +46,7 @@ app.use(session({
     })
 }));
 
+app.use(bodyParser({ limit: '4MB' }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(mongoSanitize({

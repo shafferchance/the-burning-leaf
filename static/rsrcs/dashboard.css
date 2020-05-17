@@ -1,0 +1,4 @@
+table td > * {
+    height: auto;
+    width: auto;
+}
