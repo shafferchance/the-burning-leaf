@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>The Buring Leaf</title>
+        <link rel="stylesheet" href="index.css">
+        <script src="index.js" type="application/javascript"></script>
+    </head>
+    <body>
+        <nav class="nav">
+            <span aria-label="Name and Phone" class="nav-info">
+                <h1>The Burning Leaf</h1>
+                <address class="pn" aria-label="phone number">
+                    (757) 292-4823
+                </address>
+            </span>
+            <label for="hamburger" class="mobile-menu">&#9776;</label>
+            <input type="checkbox" id="hamburger">
+            <menu>
+                <li class="socials" value="pass">
+                    <address class="address" 
+                             aria-label="address-icon"
+                             aria-haspopup="true">
+                        <label for="addressCheck" 
+                               aria-flowto="addressA">
+                            <div class="icon location">
+                                <svg version="1.1" id="Layer_1" xmlns="https://www.w3.org/2000/svg" xmlns:xlink="https://www.w3.org/1999/xlink" x="0px" y="0px"
+                                    viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+                                    <circle style="fill:#324A5E;" cx="256" cy="256" r="256"/>
+                                    <path style="fill:#2B3B4E;" d="M504.601,317.269L330.128,142.796l-72.692-11.205l-80.162,80.162l72.252,165.348l-114.067,26.293
+                                        l107.872,108.292c4.198,0.205,8.42,0.314,12.667,0.314C376.265,512,477.141,429.063,504.601,317.269z"/>
+                                    <ellipse style="fill:#90DFAA;" cx="256" cy="398.222" rx="123.259" ry="24.652"/>
+                                    <path style="fill:#6FC186;" d="M256,373.57c-0.193,0-0.381,0.003-0.574,0.003v49.299c0.193,0,0.381,0.003,0.574,0.003
+                                        c68.074,0,123.259-11.036,123.259-24.652C379.259,384.608,324.074,373.57,256,373.57z"/>
+                                    <path style="fill:#FFD15D;" d="M256,108.606c-54.269,0-98.263,43.994-98.263,98.263c0,83.375,98.263,196.525,98.263,196.525
+                                        s98.263-107.941,98.263-196.525C354.263,152.6,310.269,108.606,256,108.606z M256,256c-27.134,0-49.131-21.997-49.131-49.131
+                                        s21.997-49.131,49.131-49.131s49.131,21.997,49.131,49.131S283.134,256,256,256z"/>
+                                    <path style="fill:#F9B54C;" d="M354.263,206.869c0-54.269-43.994-98.263-98.263-98.263c-0.193,0-0.381,0.014-0.574,0.014v49.131
+                                        c0.191-0.002,0.381-0.014,0.574-0.014c27.134,0,49.131,21.997,49.131,49.131S283.134,256,256,256c-0.193,0-0.383-0.012-0.574-0.014
+                                        v146.739c0.371,0.434,0.574,0.669,0.574,0.669S354.263,295.453,354.263,206.869z"/>
+                                </svg>
+                            </div>
+                        </label>
+                        <input type="checkbox" id="addressCheck">
+                        <span id="addressA">1730 George Washington Memorial Hwy Suite E, Yorktown, VA 23693</span>
+                    </address>
+                    <a rel="noopener noreferrer"
+                       target="_blank"
+                       href="https://www.facebook.com/The-Burning-Leaf-Cigar-Lounge-100238971575979/">
+                        <img class="icon facebook" src="rsrcs/f_logo_RGB-Blue_58.png">
+                    </a>
+                    <a rel="noopener norefferer"
+                       target="_blank"
+                       href="https://www.instagram.com/theburningleafcigarlounge/">
+                        <img class="icon insta" src="rsrcs/Instagram_AppIcon_Aug2017.png">
+                    </a>
+                </li>
+                <li value="home">Home</li>
+                <li value="cigars">Cigars</li>
+                <li value="exp">Experience</li>
+                <li value="about">About Us</li>
+            </menu>
+        </nav>
+        <div class="rotating-imgs">
+            <h1>
+                <span class="radial-text">A Relaxing Experience</span>
+                <span class="radial-text">Created & Driven</span>
+                <span class="radial-text">By You</span>
+                <span class="tagline radial-text">
+                    Your Neighborhood Cigar Lounge
+                </span>
+            </h1>
+            <img src="rsrcs/people_burning.jpeg" />
+            <img src="rsrcs/cigars.jpeg"/>
+            <img src="rsrcs/lounge.jpeg"/>
+            <img src="rsrcs/store_front.jpeg"/>
+            <div class="rotating-imgs mobile"></div>
+            <div class="rotating-imgs mobile"></div>
+            <div class="rotating-imgs mobile"></div>
+            <div class="rotating-imgs mobile"></div>
+        </div>
+        <main data-curr="home">
+            <div class="banner left-banner">
+            </div>
+            <div class="center">
+                <article>
+                    <h2 style="text-align: center;">Welcome</h2>
+                    <p>Welcome to the Burning Leaf please take a look at our fine 
+                        cigars and if any interest you, why not come visit us soon. 
+                        Thank you for stopping by. </p>
+                </article>
+                <article>
+                    <h2 style="text-align: center;">Announcements</h2>
+                    <p>Coming soon</p>
+                </article>
+                <article>
+                    <h2 style="text-align: center;">Events</h2>
+                    <p>Coming soon</p>
+                </article>
+            </div>
+            <div class="banner right-banner">
+                <section aria-label="contact-banner">
+                    <!-- <div class="mapouter">
+                        <div class="gmap_canvas">
+                            <iframe width="300" height="300" id="gmap_canvas" 
+                                    src="https://maps.google.com/maps?q=the%20burning%20leaf&t=&z=13&ie=UTF8&iwloc=&output=embed" 
+                                    frameborder="0" scrolling="no" marginheight="0" 
+                                    marginwidth="0">
+                            </iframe>
+                            <a href="https://www.embedgooglemap.org"></a>
+                        </div>
+                    </div> -->
+                </section>
+            </div>
+        </main>
+        <footer></footer>
+    </body>
+</html>
