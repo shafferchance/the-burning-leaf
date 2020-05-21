@@ -1,10 +1,10 @@
 const dotenv = require("dotenv");
 const express = require('express');
-const session = require('express-session');
+// const session = require('express-session');
 const bodyParser = require('body-parser');
 const mongoSanitize = require('express-mongo-sanitize');
-const MongoStore = require('connect-mongo')(session);
-const { v4: uuidv5 } = require('uuid');
+// const MongoStore = require('connect-mongo')(session);
+// const { v4: uuidv5 } = require('uuid');
 
 const fs = require('fs');
 const path = require('path');
@@ -14,6 +14,7 @@ const db = require('./logic/database-login');
 const about = require('./controllers/about.controller.js');
 const general = require('./controllers/general.controller.js');
 const inv = require('./controllers/inventory.controller.js');
+const users = require('./controllers/users.controller.js');
 
 dotenv.config();
 const app = express();
@@ -34,17 +35,17 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(session({
-    genid: function (req) {
-        return uuidv5();
-    },
-    touchAfter: 24 * 3600,
-    secret: 'das;ovihd;alsidfagoisgya;osldifasdfpoasdivy;lh',
-    store: new MongoStore({
-        url: process.env.NODE_ENV === 'production' ?
-                process.env.DB_CONN_S : process.env.DB_CONN_LOCAL_S
-    })
-}));
+// app.use(session({
+//     genid: function (req) {
+//         return uuidv5();
+//     },
+//     touchAfter: 24 * 3600,
+//     secret: 'das;ovihd;alsidfagoisgya;osldifasdfpoasdivy;lh',
+//     store: new MongoStore({
+//         url: process.env.NODE_ENV === 'production' ?
+//                 process.env.DB_CONN_S : process.env.DB_CONN_LOCAL_S
+//     })
+// }));
 
 app.use(bodyParser({ limit: '4MB' }));
 app.use(bodyParser.json());
@@ -61,6 +62,7 @@ app.use(express.static(path.resolve('..','static')));
 app.use('/api/v1/about', about);
 app.use('/api/v1/general', general);
 app.use('/api/v1/inv', inv);
+app.use('/api/v1/users', users);
 // app.use('/hello', (req, res, next) => {
 //     res.append("data", "hello");
 //     res.end();

@@ -26,7 +26,7 @@
 //         });
 //     });
 // }
-
+const jwt = require('jsonwebtoken');
 const mongoClient = require("mongodb").MongoClient;
 let mongodb;
 
@@ -51,8 +51,26 @@ function close () {
     mongodb.close();
 }
 
+function genJWT (userId, role = "user") {
+    return new Promise((res, rej) => {
+        jwt.sign({
+            _id: userId,
+            role: role,
+        },
+        process.env.SECRET,
+        {
+            expiresIn: '1h'
+        },
+        (err, token) => {
+            if (err) rej(err);
+                res(token);
+        })
+    })
+}
+
 module.exports = {
     connect,
+    genJWT,
     get,
     close
 };

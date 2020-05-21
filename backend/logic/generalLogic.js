@@ -1,5 +1,7 @@
-const dbCrud = require('./database-crud');
 const bcrypt = require('bcrypt');
+import { sign } from 'jsonwebtoken';
+
+const dbCrud = require('./database-crud');
 
 //  -------------------------- Announcement CRUD ---------------------------
 
@@ -137,19 +139,6 @@ function updateLandingPicture (id ,data, cb) {
     }, data)
     .then(result => cb(null, result))
     .catch(err => cb(err, null));
-}
-
-function login (user, pass, cb) {
-    dbCrud.mongoGETOne("users", {"user": user}, {})
-          .then(result => {
-	      console.log(result);
-              bcrypt.compare(pass, result.pass, (err, same) => {
-		  console.log(same);
-                  if (err) { cb(err, null) }
-                  cb(null, same);
-              })
-          })
-          .catch(err => {console.log(err); cb(err, null)});
 }
 
 module.exports = {

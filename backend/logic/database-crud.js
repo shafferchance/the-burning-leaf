@@ -82,14 +82,14 @@ function mongoInsert (collection, entries) {
               .collection(collection)
               .insertMany(entries, (err, result) => {
                   if (err !== null) { rej(err); }
-                  res(result.insertedCount);
+                  res(result);
               });
         }
         dbConn.get()
           .collection(collection)
           .insertOne(entries, (err, result) => {
             if (err !== null) { rej(err); }
-            res(result.insertedCount);
+            res(result);
           });
     })
 }

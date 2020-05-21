@@ -187,26 +187,26 @@ general.put("/landing_pictures", (req, res, next) => {
         if (err !== null) { next(err); }
         res.write(JSON.stringify({"data": result}));
         res.end();
-        return res;
+        return res;  
     });
 });
 
-general.post("/login", (req, res, next) => {
-    //console.log(req.body);
-    generalLogic.login(req.body.user, req.body.pword, (err, same) => {
-	//console.log(err);	
-        if (err !== null) next(err);
-        if (same === true) {
-            req.session.authenticated = true;
-            res.write('{"result":"success"}');
-            res.status(200);
-            res.end();
-        } else {
-            res.write('{"err":"Failed to login"}');
-            res.status(403);
-            res.end();
-        }
-    })
-});
+// general.post("/login", (req, res, next) => {
+//     //console.log(req.body);
+//     generalLogic.login(req.body.user, req.body.pword, (err, same) => {
+// 	//console.log(err);	
+//         if (err !== null) next(err);
+//         if (same === true) {
+//             req.session.authenticated = true;
+//             res.write('{"result":"success"}');
+//             res.status(200);
+//             res.end();
+//         } else {
+//             res.write('{"err":"Failed to login"}');
+//             res.status(403);
+//             res.end();
+//         }
+//     })
+// });
 
 module.exports = general;

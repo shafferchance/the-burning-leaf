@@ -1,22 +1,17 @@
-const bcrypt = require('bcrypt');
-const dotenv = require("dotenv");
+import * as argon2 from 'argon2';
+import dotenv from 'dotenv';
+import { randomBytes } from 'crypto';
 
-const db = require('./logic/database-login');
-const crud = require('./logic/database-crud');
-const SALT = 15;
+import db from './logic/database-login';
+import crud from './logic/database-crud';
+
 dotenv.config();
 db.connect();
 
 let [usr, pass] = process.argv.slice(2);
 
-bcrypt.genSalt(SALT, function(err, salt) {
-    if (err) throw err;
-    bcrypt.hash(pass, salt, function (err, hash) {
-        if (err) throw err;
-        crud.mongoInsert("users", {"user": usr, "pass": hash})
-            .then(res => {console.log(res);})
-            .catch(err => console.error(err));
-    })
-});
-
-
+const salt = randomBytes(32);
+argon2.hash(pass, { salt })
+      .then(hash => crud.mongoInsert("users", {"user": usr, "pass": hash, "role": "admin"}))
+      .then(res => db.genJWT(res.insertedId, "admin"))
+      .catch(err => console.error(err))
