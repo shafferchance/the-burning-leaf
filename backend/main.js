@@ -27,7 +27,7 @@ app.use((req, res, next) => {
         case 'OPTIONS':
             res.append('Access-Control-Allow-Origin',"*");
             res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-            res.append('Access-Control-Allow-Headers','Content-Type,X-Session');
+            res.append('Access-Control-Allow-Headers','Content-Type,X-Auth-Header');
             break;
         default:
             res.append('Access-Control-Allow-Origin', "*");

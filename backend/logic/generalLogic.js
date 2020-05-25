@@ -1,5 +1,4 @@
-const bcrypt = require('bcrypt');
-import { sign } from 'jsonwebtoken';
+const sign = require('jsonwebtoken').sign;
 
 const dbCrud = require('./database-crud');
 
@@ -146,5 +145,4 @@ module.exports = {
     deleteContact, getContact, insertContact, updateContact,
     deleteEvent, getEvent, getEvents, insertEvent, updateEvent,
     deleteLandingPicture, getLandingPicture, insertLandingPicture, updateLandingPicture,
-    login
 }

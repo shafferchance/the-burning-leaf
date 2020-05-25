@@ -1,7 +1,7 @@
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
-const randomBytes = require('crypto').randomBytes;
-const genJWT = require('./database-login').genJWT
+const { randomBytes } = require('crypto');
+const { genJWT } = require('./database-login');
 const dbCRUD = require('./database-crud');
 
 function signUp (usr, pass, role = "customer", cb = undefined) {
@@ -14,14 +14,18 @@ function signUp (usr, pass, role = "customer", cb = undefined) {
           .catch(err => cb(err, null));
 }
 
-function login (usr, pass, cb) {
-    dbCRUD.mongoGETOne("users", {"user": usr})
-          .then(result => argon2.verify(result.pass, pass))
+function login (usr, pass) {
+    console.log("Chcking pword...")
+    return dbCRUD.mongoGETOne("users", {"user": usr})
+          .then(result => Promise.all([argon2.verify(result.pass, pass), Promise.resolve(result)]))
           .then(same => {
-              if (!same) cb("Incorrect password", null);
-              cb(null, same);
+              console.log(same[0])
+              if (!same[0]) {
+                  return false;
+              }
+              return genJWT(same[1].id)
           })
-          .catch(err => cb(err, null));
+          .catch(err => err);
 }
 
 module.exports = {

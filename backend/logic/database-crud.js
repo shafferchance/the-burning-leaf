@@ -76,6 +76,7 @@ function mongoGETOne (collection, query, opts) {
 }
 
 function mongoInsert (collection, entries) {
+    console.log(dbConn.get());
     return new Promise((res, rej) => {
         if (entries instanceof Array) {
             dbConn.get()

@@ -28,9 +28,10 @@
 // }
 const jwt = require('jsonwebtoken');
 const mongoClient = require("mongodb").MongoClient;
+let clientConn;
 let mongodb;
 
-function connect () {
+function connect (cb) {
     console.log(process.env.NODE_ENV === 'production' ? 
     process.env.DB_CONN : process.env.DB_CONN_LOCAL)
     mongoClient.connect(process.env.NODE_ENV === 'production' ? 
@@ -39,7 +40,9 @@ function connect () {
         useUnifiedTopology: true
     }, function(err, client) {
         if (err !== null) { throw TypeError(err); }
-        mongodb = client.db("cigarShop");
+        clientConn = client;
+        mongodb = clientConn.db("cigarShop");
+        if (cb !== undefined) { cb() }
     });
 }
 
@@ -48,7 +51,7 @@ function get () {
 }
 
 function close () {
-    mongodb.close();
+    clientConn.close();
 }
 
 function genJWT (userId, role = "user") {

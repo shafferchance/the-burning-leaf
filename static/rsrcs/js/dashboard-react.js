@@ -4,7 +4,7 @@ const { Button, Carousel, CarouselCaption, CarouselControl,
         Label, Modal, ModalHeader, ModalBody, Table } = Reactstrap;
 
 function sendToSrvr (path, body, method = "GET", headers = {'content-type':'application/json'}) {
-    return fetch(/*`https://${window.location.host}/${path}`*/ `https://cigar.temporaltech.app/${path}`, {
+    return fetch(`https://${window.location.host}/${path}` /*`https://cigar.temporaltech.app/${path}`*/, {
         method: method,
         body: method === "GET" ? undefined : body,
         headers: headers
@@ -40,7 +40,7 @@ const Login = ({ setState, setLogin, loggedIn }) => {
         e.preventDefault();
         console.log(e.target);
         sendToSrvr(
-            "api/v1/general/login", 
+            "api/v1/users/login", 
             JSON.stringify({
                 user: e.target[0].value,
                 pword: e.target[1].value
