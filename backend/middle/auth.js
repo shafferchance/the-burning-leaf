@@ -1,27 +1,29 @@
 const jwt = require("jsonwebtoken");
 
 const role = {
-    "admin": {
-        [/\/.+/]: ["GET"]
-    },
-    "customer": {
-        [/^((?!dashboard\.html).)*$/]: ["GET"]
-    }
+    "admin": [
+        {[/\/.+/]: ["GET","POST","DELETE"]}
+    ],
+    "customer": [
+        {[/api\/v1\/general\/.+/]: ["GET"]}
+    ]
 }
 
-function role (req, res, next) {
+function isRole (req, res, next) {
     const token = req.header("X-Auth-Header");
     if (!token) return res.status(401).send("Access Denied: No Token Found!");
     try {
         let perms = [];
         const decoded = jwt.verify(token, process.env.SECRET);
-        for (const key in role[decoded.role]) {
-            const match = req.baseUrl.match(new RegExp(key));
+        console.log(decoded.role);
+        for (const key of role[decoded.role]) {
+            const [regEx, verbs] = Object.entries(key)[0];
+            const match = req.baseUrl.match(new RegExp(regEx));
             if (key === req.baseUrl && match) {
-                perms = role[decoded.role][key];
+                perms = verbs;
                 break;
             } else if (match) {
-                perms = role[decoded.role][key];
+                perms = verbs;
             }
         }
         if (perms.indexOf(req.method.toUpperCase())) {
@@ -31,8 +33,8 @@ function role (req, res, next) {
             return res.status(401).send('Access Denied: You do not have permission to do this')
         }
     } catch (ex) {
-        res.status(401).send("Invalid token");
+        res.status(401).send(`Invalid token: ${ex}`);
     }
 }
 
-module.exports = role;
+module.exports = isRole;

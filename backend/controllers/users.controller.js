@@ -1,5 +1,6 @@
 const usr = require('express').Router();
 const usrLogic = require('../logic/usersLogic');
+const isRole = require('../middle/auth');
 
 usr.post("/sign-up", (req, res, next) => {
     usrLogic.signUp(req.body.user, req.body.pass, req.body.role, (err, result) => {
@@ -30,5 +31,10 @@ usr.post("/login", (req, res, next) => {
             .catch(err => res.status(500).send(err));
 
 });
+
+usr.get("/auth-test", isRole, (req, res, next) => {
+    console.log("Protected accessed!");
+    res.send("what?");
+})
 
 module.exports = usr;

@@ -23,7 +23,7 @@ function login (usr, pass) {
               if (!same[0]) {
                   return false;
               }
-              return genJWT(same[1].id)
+              return genJWT(same[1].id, same[1].role || "user");
           })
           .catch(err => err);
 }
