@@ -10,7 +10,14 @@ db.connect(() => {
 
       const salt = randomBytes(32);
       argon2.hash(pass, { salt })
-            .then(hash => crud.mongoInsert("users", {"user": usr, "pass": hash, "role": "admin"}))
+            .then(hash => crud.mongoInsert(
+                              "users", 
+                              {
+                                    "user": usr, 
+                                    "pass": hash, 
+                                    "role": "admin",
+                                    "refresh": []
+                              }))
             .then(res => db.genJWT(res.insertedId, "admin"))
             .then(key => {
                   console.log(key); 

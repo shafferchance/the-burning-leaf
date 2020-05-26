@@ -28,6 +28,7 @@
 // }
 const jwt = require('jsonwebtoken');
 const mongoClient = require("mongodb").MongoClient;
+
 let clientConn;
 let mongodb;
 
@@ -62,7 +63,7 @@ function genJWT (userId, role = "user") {
         },
         process.env.SECRET,
         {
-            expiresIn: '1h'
+            expiresIn: '15min'
         },
         (err, token) => {
             if (err) rej(err);
@@ -71,9 +72,27 @@ function genJWT (userId, role = "user") {
     })
 }
 
+function genJWTRefresh (id, role = "user") {
+    return new Promise((res, rej) => {
+        jwt.sign({
+            id: id,
+            role: role
+        },
+        process.env.SECRET,
+        {
+            expiresIn: '30min'
+        },
+        (err, token) => {
+            if (err) rej(err);
+            res(token);
+        })
+    })
+}
+
 module.exports = {
     connect,
     genJWT,
+    genJWTRefresh,
     get,
     close
 };

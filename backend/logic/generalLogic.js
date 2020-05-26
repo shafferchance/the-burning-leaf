@@ -16,6 +16,12 @@ function getAnnouncement (id, cb) {
           .catch(err => cb(err, null));
 }
 
+function getAnnouncementList (cb) {
+    dbCrud.mongoGET("announcements", {})
+          .then(result => cb(null, result))
+          .catch(err => cb(err, null));
+}
+
 function getAnnouncements (cb) {
     dbCrud.mongoAggregate("announcements", [{
         "$facet": {
@@ -141,7 +147,7 @@ function updateLandingPicture (id ,data, cb) {
 }
 
 module.exports = {
-    deleteAnnouncements, getAnnouncement, getAnnouncements, insertAnnouncement, updateAnnouncement,
+    deleteAnnouncements, getAnnouncement, getAnnouncementList, getAnnouncements, insertAnnouncement, updateAnnouncement,
     deleteContact, getContact, insertContact, updateContact,
     deleteEvent, getEvent, getEvents, insertEvent, updateEvent,
     deleteLandingPicture, getLandingPicture, insertLandingPicture, updateLandingPicture,

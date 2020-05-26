@@ -10,8 +10,9 @@ const role = {
 }
 
 function isRole (req, res, next) {
-    const token = req.header("X-Auth-Header");
-    if (!token) return res.status(401).send("Access Denied: No Token Found!");
+    const header = req.headers["authorization"];
+    if (!header) return res.status(403).send("Access Denied: No Token Found!");
+    const [_,token] = header.split(' ');
     try {
         let perms = [];
         const decoded = jwt.verify(token, process.env.SECRET);
