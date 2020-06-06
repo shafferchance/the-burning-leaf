@@ -232,7 +232,7 @@ main {
     padding-top: 4em;
 }
 
-.rotating-imgs h1 {
+.text-float {
     text-align: center;
     position: absolute;
     color: white;
@@ -365,6 +365,24 @@ main {
 .radial-text {
     display: block;
     text-shadow: 0.2em 0.1em 0.2em rgba(217,119,0,0.5);
+}
+
+.parallax-contain {
+    width: inherit;
+    height: inherit;
+    border-bottom: 10px solid black;
+    padding-top: 20vh;
+    background-attachment: fixed;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.parallax-overlay {
+    height: 60vh;
+    width: 60vw;
+    margin: auto;
+    background-color: ivory;
+    opacity: 0.75;
 }
 
 /* .radial-text::first-line {

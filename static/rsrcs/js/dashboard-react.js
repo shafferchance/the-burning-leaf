@@ -1,10 +1,10 @@
-const { useEffect, useReducer, useState } = React;
+const { useEffect, useReducer, useState, useContext } = React;
 const { Button, Carousel, CarouselCaption, CarouselControl, 
         CarouselIndicators, CarouselItem, Form, FormGroup, Input, 
         Label, Modal, ModalHeader, ModalBody, Table } = Reactstrap;
 
-function sendToSrvr (path, body, method = "GET", headers = {'content-type':'application/json'}) {
-    return fetch(`https://${window.location.host}/${path}` /*`https://cigar.temporaltech.app/${path}`*/, {
+function sendToSrvr (path, body, method = "GET", headers = {'content-type':'application/json',}) {
+    return fetch(`http://${window.location.host}/${path}` /*`https://cigar.temporaltech.app/${path}`*/, {
         method: method,
         body: method === "GET" ? undefined : body,
         headers: headers
@@ -38,26 +38,36 @@ const Login = ({ setState, setLogin, loggedIn }) => {
 
     const handleLogin = e => {
         e.preventDefault();
-        console.log(e.target);
+        // console.log(e.target);
         sendToSrvr(
             "api/v1/users/login", 
             JSON.stringify({
-                user: e.target[0].value,
-                pword: e.target[1].value
+                user: user,
+                pword: pword
             }
         ), "POST")
         .then(result => {
-            if (result.result === "success") {
+            if (result.message === "success") {
+                setState({
+                    type: 'set',
+                    key: 'token',
+                    value: result.jwt_token
+                });
                 Promise.all([
                     sendToSrvr("api/v1/general/landing_pictures"),
-                    sendToSrvr("api/v1/general/events"),
-                    sendToSrvr("api/v1/general/announcements"),
+                    sendToSrvr("api/v1/general/events_list"),
+                    sendToSrvr("api/v1/general/announcement_list"),
                     sendToSrvr("api/v1/inv/products")
                 ]).then(results => {
                     setState({
                         type: 'set',
                         key: 'landing_pics',
-                        value: results[0].data.length === 0 ? promises : results[0].data
+                        value: results[0].data.length === 0 ? 
+                            [{data: "rsrcs/people_burning.jpeg"}, 
+                             {data: "rsrcs/cigars.jpeg" },
+                             {data: "rsrcs/lounge.jpeg"},
+                             {data: "rsrcs/store_front.jpeg"}]
+                                : results[0].data
                     });
                     setState({
                         type: 'set',
@@ -66,7 +76,7 @@ const Login = ({ setState, setLogin, loggedIn }) => {
                     });
                     setState({
                         type: 'set',
-                        key: 'announces',
+                        key: 'announcements',
                         value: results[2].data
                     });
                     setState({
@@ -157,7 +167,7 @@ const LandingPics = ({ pictures, mutate }) => {
     const exitg = () => setAnimActive(true);
     const exitd = () => setAnimActive(false);
 
-    console.log(pictures);
+    // console.log(pictures);
     
     return (
         React.createElement(Carousel, {
@@ -200,9 +210,8 @@ const LandingPics = ({ pictures, mutate }) => {
     )
 }
 
-const GenTable = ({ content, elements, headers, mutate, endpoint }) => {
+const GenTable = ({ name, content, elements, headers, mutate, endpoint, token }) => {
     const [selectedIdx, setSelected] = useState([]);
-    const [data, setData] = useState(elements || []);
     const [open, setOpen] = useState(false);
 
     const handleSelect = e => {
@@ -219,22 +228,23 @@ const GenTable = ({ content, elements, headers, mutate, endpoint }) => {
     }
 
     return (
-        React.createElement(React.Fragment, null, 
+        React.createElement(React.Fragment, null,
+            React.createElement("h1", null, name),
             React.createElement(Table, { hover: true }, 
                 React.createElement("thead", null, 
                     React.createElement("tr", null, 
                         headers.map((ele, idx) => React.createElement("th", {key: idx}, ele))
                     )
                 ),
-                React.createElement("tbody", null, 
-                    data.map((ele, idx) => React.createElement(GenRow, {
+                React.createElement("tbody", null,
+                    elements ? elements.map((ele, idx) => React.createElement(GenRow, {
+                        content: ele,
                         selected: selectedIdx.indexOf(idx) !== -1,
-                        elements: ele,
                         key: idx,
                         onClick: handleSelect,
-                        mutate: setData,
+                        mutate: mutate,
                         "data-key": idx.toString()
-                    }, null)),
+                    }, null)) : null,
                     React.createElement(GenAddRow, { setOpen: setOpen }, null)
                 )
             ),
@@ -242,7 +252,9 @@ const GenTable = ({ content, elements, headers, mutate, endpoint }) => {
                 content: content,
                 open: open,
                 setOpen: setOpen,
-                endpoint: endpoint
+                endpoint: endpoint,
+                mutate: mutate,
+                token: token
             }, null)
         )
     );
@@ -262,7 +274,7 @@ const GenAddRow = ({ setOpen }) => {
     );
 }
 
-const GenAddModal = ({ content, open, setOpen, endpoint }) => {
+const GenAddModal = ({ content, open, mutate, name, setOpen, endpoint, token }) => {
     const [state, setState] = useState({...content})
 
     const handleChange = e => {
@@ -270,7 +282,7 @@ const GenAddModal = ({ content, open, setOpen, endpoint }) => {
         setState(old => {
             let results = state[target.name];
             results.value = target.value;
-            console.log({...old, [target.name]: results});
+            // console.log({...old, [target.name]: results});
             return {
                 ...old,
                 [target.name]: results
@@ -284,8 +296,21 @@ const GenAddModal = ({ content, open, setOpen, endpoint }) => {
 
     const handleSubmit = e => {
         e.preventDefault();
-        sendToSrvr(endpoint, JSON.stringify(state), "POST")
-            .then(() => console.log("Success"))
+        sendToSrvr(endpoint, JSON.stringify(state), "POST", {
+            "Content-Type":"application/json",
+            "Authorization": `Bearer ${token}`
+        })
+            .then(() => {
+                // console.log("Success");
+                mutate(old => {
+                    let test = old[name];
+                    test.unshift(state);
+                    return {
+                        ...old,
+                        name: test
+                    }
+                });
+            })
             .catch(err => alert(err));
     }
     return (
@@ -306,7 +331,7 @@ const GenAddModal = ({ content, open, setOpen, endpoint }) => {
                             }, null)
                         )
                     ),
-                    React.createElement(Input, {type: "submit"}, null)
+                    React.createElement(Button, {type: "submit", color: "primary"}, "Submit")
                 )
             )     
         )
@@ -346,12 +371,13 @@ const GenRow = ({ content, mutate, selected }) => {
             }
         })
     }
-    console.log(Button);
-    console.log(Input);
+    // console.log(Button);
+    // console.log(Input);
+    // console.log(Object.keys(content));
     if (selected) {
         return (
             React.createElement("tr", null,
-                Object.keys(content).map((ele, idx) => 
+                Object.keys(content).filter(idx => idx !== "_id").map((ele, idx) => 
                     React.createElement("td", {key: idx}, 
                         React.createElement(Input, {
                             "data-key": ele,
@@ -374,17 +400,18 @@ const GenRow = ({ content, mutate, selected }) => {
 
     return (
         React.createElement("tr", null,
-            Object.keys(content)
+            Object.keys(content).filter(idx => idx !== "_id")
                     .map((ele, idx) => React.createElement("td", { key: idx }, content[ele].value)))
     )
 }
 
 const App = () => {
     const [state, setState] = useReducer(reducer, {
-        announces: [],
+        announcements: [],
         events: [],
         landing_pics: [],
-        products: []
+        products: [],
+        token: ""
     });
     const [loggedIn, setLoggedIn] = useState(false);
 
@@ -401,7 +428,10 @@ const App = () => {
             img.src = reader.result;
             sendToSrvr("products", JSON.stringify({
                 src: reader.result,
-            }), "PUT")
+            }), "PUT", {
+                "Content-Type":"application/json",
+                "Authorization":`Bearer ${state.token}`
+            })
             .then(result => console.log(result))
             .catch(err => console.error(err)); 
         }, false);
@@ -412,11 +442,13 @@ const App = () => {
         React.createElement(React.Fragment, null,
             React.createElement(LandingPics, {
                 pictures: state.landing_pics,
-                mutate: handleFile
+                mutate: handleFile,
+                token: state.token
             }, null),
             React.createElement(GenTable, {
+                name: "Announcements",
                 headers: ["date", "msg"],
-                elements: state.announces,
+                elements: state.announcements,
                 mutate: setState,
                 content: {
                     "Date": {
@@ -428,9 +460,11 @@ const App = () => {
                         value: ''
                     }
                 },
-                endpoint: 'api/v1/general/announcements'
+                endpoint: 'api/v1/general/announcements',
+                token: state.token
             }, null),
             React.createElement(GenTable, {
+                name: "Events",
                 headers: ["date", "msg"],
                 elements: state.events,
                 content: {
@@ -443,9 +477,12 @@ const App = () => {
                         value: ''
                     }
                 },
-                endpoint: 'api/v1/general/events'
+                mutate: setState,
+                endpoint: 'api/v1/general/events',
+                token: state.token
             }, null),
             React.createElement(GenTable, {
+                name: "Products",
                 headers: ["img","brand","desc"],
                 elements: state.products,
                 content: {
@@ -462,7 +499,9 @@ const App = () => {
                         value: ''
                     }
                 },
-                endpoint: 'api/v1/products'
+                endpoint: 'api/v1/inv/products',
+                mutate: setState,
+                token: state.token
             }, null),
             !loggedIn ? React.createElement(Login, {
                 setState: setState,
