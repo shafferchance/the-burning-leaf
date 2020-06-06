@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
+import Page from '../Lib/Page.component';
 import { sendToSrvr } from '../Lib/connections';
 
 const About = () => {
@@ -18,39 +19,53 @@ const About = () => {
         .catch(err => console.error(err));
     });
 
+    let amentiesList, humidor, staff;
+    let founding, mission, bio;
+
+    if (amenties) {
+        amentiesList = amenties.list((val, idx) => <li key={idx}>{val}</li>);
+        humidor = amenties.humidor;
+        staff = amenties.staff;
+    }
+
+    if (about) {
+        founding = about.founding;
+        mission = about.mission;
+        bio = about.bio;
+    }
+
     return (
-        <>
-            <div>
+        <Page components={[
+            <div className={"vertical-flex-alignment"}>
                 <div>
                     <h2>Amenities</h2>
-                    <article title={"amenities"}>
-                        {amenties.list ?
+                    <article title={"Amenities"}>
+                        {amentiesList ?
                             <ul>
-                                {amenties.list.map((val, idx) => <li key={idx}>{val}</li>)}
+                                {amentiesList}
                             </ul>
                         :
                             "List coming soon"}
                     </article>        
                     <article title={"Humidor"}>
-                        {amenties.humidor || "Humidor coming soon"}
+                        {humidor || "Humidor coming soon"}
                     </article>
                     <article title={"staff"}>
-                        {amenties.staff || "Staff coming soon"}
+                        {staff || "Staff coming soon"}
                     </article>
                 </div>
-            </div>
+            </div>,
             <div>
                 <article title={"founding"}>
-                    {about.founding || "Founding story coming soon"}
+                    {founding || "Founding story coming soon"}
                 </article>
                 <article title={"mission"}>
-                    {about.mission || "Mission coming soon"}
+                    {mission || "Mission coming soon"}
                 </article>
                 <article title={"About Kamul"}>
-                    {about.bio || "Biography coming soon"}
+                    {bio || "Biography coming soon"}
                 </article>
-            </div>
-        </>
+            </div>]} />
     )
 }
 

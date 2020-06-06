@@ -94,6 +94,22 @@ main {
     height: 100%;
 }
 
+.horizontal-flex-alignment {
+    display: flex;
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    transform: translate(50%, 50%);
+    flex-direction: column;
+    justify-content: center;
+    /* align-content: center; */
+}
+
+.vertical-flex-alignment {
+    display: flex;
+    justify-content: center;
+}
+
 .icon {
     height: 1.5em;
     width: 1.5em;
@@ -112,6 +128,23 @@ main {
 .icon.insta:hover {
     box-shadow: 2px -1px 4px black;
     border-radius: 8px;
+}
+
+.info-panel {
+    background: rgba(0,0,0,0.6);
+    border-radius: 15px;
+    box-shadow: 2px 2px 7px rgba(0,0,0,0.6);
+    padding: 2ch;
+    color: white;
+    font-family: 'Roboto', sans-serif;
+}
+
+.info-panel.center {
+    text-align: center;
+}
+
+.info-panel.center > span {
+    padding: 2px 0px;
 }
 
 .nav-info {
@@ -291,7 +324,7 @@ main {
 .rotating-imgs {
     width: 100vw;
     height: 94vh;
-    padding-top: 4em;
+    padding-top: 10vh;
 }
 
 .text-float {
