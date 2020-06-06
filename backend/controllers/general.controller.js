@@ -20,7 +20,7 @@ general.get("/announcement", (req, res, next) => {
     });
 })
 
-general.get("/announcement_list", (reqq, res, next) => {
+general.get("/announcement_list", (req, res, next) => {
     generalLogic.getAnnouncementList((err, result) => {
         if (err !== null) { return next(err); }
         return res.status(200)
@@ -110,6 +110,15 @@ general.get("/event", (req, res, next) => {
     });
 });
 
+general.get("/events_list", (req, res, next) => {
+    generalLogic.getEventsList((err, result) => {
+        if (err !== null) { return next(err); }
+        return res.status(200)
+                  .json({"data": result})
+                  .end();
+    })
+});
+
 general.get("/events", (req, res, next) => {
     generalLogic.getEvents((err, result) => {
         if (err !== null) { return next(err); }
@@ -120,7 +129,7 @@ general.get("/events", (req, res, next) => {
 });
 
 general.post("/events", isRole, (req, res, next) => {
-    generalLogic.insertEvent(req.body.data, (err, result) => {
+    generalLogic.insertEvent(req.body, (err, result) => {
         if (err !== null) { return next(err); }
         return res.status(200)
                   .json({"data": result})
