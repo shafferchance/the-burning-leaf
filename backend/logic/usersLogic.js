@@ -2,7 +2,7 @@ const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
 const process = require('process');
 const { randomBytes } = require('crypto');
-const { ObjectID } = require('mongodb');
+const { ObjectID, ResumeToken } = require('mongodb');
 
 const { genJWT, genJWTRefresh } = require('./database-login');
 const dbCRUD = require('./database-crud');
@@ -27,7 +27,11 @@ function signUp (usr, pass, role = "customer", cb = undefined) {
 function login (usr, pass) {
     console.log("Chcking pword...")
     return dbCRUD.mongoGETOne("users", {"user": usr})
-          .then(result => Promise.all([argon2.verify(result.pass, pass), Promise.resolve(result)]))
+          .then(result => {
+              if (result === null) { throw new Error("invalidUser")}
+              console.log(result, pass);
+              return Promise.all([argon2.verify(result.pass, pass), Promise.resolve(result)])
+          })
           .then(same => {
               console.log(same[1]._id)
               if (!same[0]) {
@@ -35,7 +39,6 @@ function login (usr, pass) {
               }
               return Promise.all([genJWTRefresh(same[1]._id), genJWT(same[1]._id, same[1].role || "user")]);
           })
-          .catch(err => err);
 }
 
 function verify_refresh (token) {

@@ -67,6 +67,7 @@ module.exports = env => {
             contentBase: path.join(__dirname, 'build'),
             compress: true,
             port: 9000,
+            host: "0.0.0.0",
             historyApiFallback: {
                 index: '/'
             }

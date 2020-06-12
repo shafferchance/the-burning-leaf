@@ -22,11 +22,11 @@ usr.post("/login", (req, res, next) => {
     console.log("called");
     usrLogic.login(req.body.user, req.body.pword)
             .then(same => {
-                console.log(same);
-                if (same[1] === false) { 
+                console.log("Returned: ", same);
+                if (same === false) { 
                     return res.status(401)
                               .json({
-                                  "message":"Incorrect password"
+                                  message: "invalidPassword"
                               })
                               .end();
                 }
@@ -39,7 +39,7 @@ usr.post("/login", (req, res, next) => {
                           })
                           .end();
             })
-            .catch(err => res.status(500).json({err: err}));
+            .catch(err => res.status(500).json({message: err.message}));
 
 });
 

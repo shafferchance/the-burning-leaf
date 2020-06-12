@@ -1,0 +1,98 @@
+.right-banner {
+    position: absolute;
+    right: 0;
+    padding-top: 9vh;
+    height: 91vh;
+    width: 15vw;
+    margin-left: 5px;
+    display: flex;
+    flex-direction: row-reverse;
+    background-color: rgba(255,255,255,0.5);
+    transition: ease;
+    transition-duration: 1s;
+}
+
+.right-banner-collapsed {
+    position: absolute;
+    right: 0;
+    top: 9vh;
+    height: 91vh;
+    min-width: 48px;
+    width: 3vw;
+    background-color: rgba(255,255,255,0.5);
+    transition: ease;
+    transition-duration: 1s;
+}
+
+.right-banner-icons {
+    display: flex;
+    flex-direction: column;
+    font-size: xx-large;
+    align-items: flex-end;
+    text-align: center;
+    align-content: center;
+    padding-right: 3px; 
+}
+
+.right-banner-item-enter {
+    opacity: 0;
+}
+
+.right-banner-item-enter-active {
+    opacity: 1;
+    transition: all 500ms ease-out 250ms;
+}
+
+.right-banner-item-exit {
+    opacity: 1;
+}
+
+.right-banner-item-exit-active {
+    opacity: 0;
+    transition: all 500ms ease-out 250ms; 
+}
+
+.svg-fit {
+    width: 80%;
+}
+
+@media screen and (max-width: 768px) {
+    .right-banner-collapsed {
+        top: auto;
+        bottom: 10vh;
+        height: 173px;
+    }
+
+    .right-banner {
+        width: 3vw;
+        min-width: 48px;
+        top: auto;
+        bottom: 10vh;
+        height: 173px;
+        padding-top: 0;
+    }
+
+    .mobile-item {
+        position: fixed;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: white;
+    }
+
+    .mobile-item:after {
+        content: '\274e';
+        top: 1ch;
+        right: 1ch;
+        position: absolute;
+    }
+
+    .right-banner-item-enter-active {
+        opacity: 1;
+        transition: all 500ms ease-out;
+    }
+
+    .right-banner-item-exit-active {
+        opacity: 0;
+        transition: all 500ms ease-out; 
+    }
+}

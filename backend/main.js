@@ -68,7 +68,7 @@ app.use('/api/v1/users', users);
 //     res.end();
 // });
 
-app.listen(3000, () => console.log("Listening on port 3000"));
+app.listen(3000, '0.0.0.0', () => console.log("Listening on port 3000"));
 /*https.createServer({
     key: fs.readFileSync(process.env.NODE_ENV === 'VS_CODE' ?
                             "backend\\server.key" : "server.key"),

@@ -2,8 +2,8 @@
 
 import 'react-calendar/dist/Calendar.css';
 
-import Page from '../Lib/Page.component';
-import { RightSideBar } from '../Lib/RightSideBar.component';
+import Page from '../Lib/Page/Page.component';
+import { RightSideBar } from '../Lib/RightSideBar/RightSideBar.component';
 
 const InfoPanel = ({ header, data, noData, className, styles={textAlign: "center"}}) => {
     return (

@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './RotatingPics.css';
+
 const RotatingPics = ({ pics }) => {
     console.log(pics);
     if (!Array.isArray(pics)) throw new Error("Expected picture urls");

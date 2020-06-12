@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import Calendar from 'react-calendar';
-
+import { CSSTransition } from 'react-transition-group';
 import { useCustomContext } from 'react-global-light';
+
+import "./RightSide.css";
+import { useWindowDimensions } from '../hooks';
 
 const CalendarPanel = ({ header, data, noData, className, styles={textAlign: "center"} }) => {
     const [date, setDate] = useState(new Date());
@@ -20,9 +22,14 @@ const CalendarPanel = ({ header, data, noData, className, styles={textAlign: "ce
     );
 }
 
-const SideBarOption = ({name, entries}) => {
+const SideBarOption = ({name, entries, className}) => {
+    const { width } = useWindowDimensions();
+
+    const mobile = width <= 768;
+
     return (
-        <div style={{margin: "0 auto", textAlign: "center"}}>
+        <div style={{margin: "0 auto", textAlign: "center"}} 
+             className={mobile ? "upper-right mobile-item" : null}>
             <h2>{name}</h2>
             <br />
             {entries || "Coming soon"}
@@ -30,7 +37,7 @@ const SideBarOption = ({name, entries}) => {
     )
 }
 
-const Icon = ({name, icon, setComponent, comp, ImgComp}) => {
+const Icon = ({name, icon, setComponent, comp, ImgComp, className}) => {
     const handleSelect = () => {
         setComponent(old => {
             if (!old) return comp;
@@ -43,17 +50,19 @@ const Icon = ({name, icon, setComponent, comp, ImgComp}) => {
 
     if (ImgComp) {
         return (
-            <ImgComp aria-label={name} onClick={handleSelect}></ImgComp> 
+            <ImgComp aria-label={name} onClick={handleSelect} 
+                     className={className}></ImgComp> 
         )
     }
     return (
-        <span aria-label={name} onClick={handleSelect}>{icon}</span>
+        <span aria-label={name} onClick={handleSelect}
+                                className={className}>{icon}</span>
     );
 }
 
 const LocationSVG = () => {
     return (
-        <span style={{width: '2.5vw'}}>
+        <span style={{width: '100%', display: 'inline-flex'}}>
             <svg version="1.1" id="Layer_1" xmlns="https://www.w3.org/2000/svg" xmlnsXlink="https://www.w3.org/1999/xlink" x="0px" y="0px"
                     viewBox="0 0 512 512" enableBackground={"new 0 0 512 512"} xmlSpace="preserve">
                 <circle style={{fill: "#324A5E" }} cx="256" cy="256" r="256"/>
@@ -70,6 +79,20 @@ const LocationSVG = () => {
                             v146.739c0.371,0.434,0.574,0.669,0.574,0.669S354.263,295.453,354.263,206.869z"/>
             </svg>
         </span>
+    )
+}
+
+const RightSideBarComp = ({ comp, in: inProp }) => {
+    return (
+        <CSSTransition
+            in={inProp}
+            timeout={1000}
+            classNames={"right-banner-item"}
+            >
+            <>
+                {comp}
+            </>
+        </CSSTransition>
     )
 }
 
@@ -90,22 +113,25 @@ export const RightSideBar = () => {
                                             <span key={idx}>{val}</span>) : null;
 
     return (
-        <aside className={`banner ${comp ? "right-banner" : "right-banner-collapsed"}`}>
-            <div className={"right-banner-icons"}>
+        <>
+            <aside className={comp ? "right-banner" : "right-banner-collapsed"}>
+                <div className={"right-banner-icons"}>
                 <Icon icon={String.fromCharCode(0x23F2)} setComponent={setComp}
-                      comp={<SideBarOption name={"Hours"} />} name={"Hours"} />
+                        comp={<SideBarOption name={"Hours"} key={0}/>} name={"Hours"} />
                 <Icon icon={String.fromCharCode(0xD83D, 0xDCC5)} setComponent={setComp}
-                      comp={<SideBarOption name={"Events"} />} name={"Events"} />
+                        comp={<SideBarOption name={"Events"} key={0}/>} name={"Events"} />
                 <Icon icon={String.fromCharCode(0xD83D, 0xDD14)} setComponent={setComp}
-                      comp={<SideBarOption name={"Announcements"} />} name={"Announcements"} />
+                        comp={<SideBarOption name={"Announcements"} key={0}/>} name={"Announcements"} />
                 <Icon icon={<LocationSVG />} name={"Location"} setComponent={setComp}
-                      comp={<SideBarOption name={"Location"} 
-                                           entries={[
-                                            <address>
+                      className={"svg-fit"}
+                      comp={<SideBarOption name={"Location"} key={0}
+                                            entries={[
+                                            <address key={0}>
                                                 1730 George Washington Memorial Hwy Suite E, Yorktown, VA 23693
                                             </address>]} />} />
-            </div>
-            {comp}
-        </aside>
+                </div>
+                <RightSideBarComp in={!!comp} comp={comp}/>
+            </aside>
+        </>
     );
 }
