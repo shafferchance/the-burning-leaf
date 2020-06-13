@@ -10,6 +10,7 @@ import Carousel from "react-material-ui-carousel";
 import React, { useState, useReducer } from "react";
 import { useCustomContext } from "react-global-light";
 import PublishIcon from "@material-ui/icons/Publish";
+import AddIcon from "@material-ui/icons/Add";
 import {
   Dialog,
   DialogContent,
@@ -21,12 +22,15 @@ import {
   ExpansionPanelSummary,
   TextField,
   Typography,
+  IconButton,
   Input,
   Fade,
   Backdrop,
   makeStyles,
   Checkbox,
   CardMedia,
+  Tooltip,
+  withStyles
 } from "@material-ui/core";
 
 import Cigars from "../App/cigars.jpeg";
@@ -440,7 +444,7 @@ const removeFromItem = (state, action) => {
   }
 };
 
-const DataTable = ({ name, columns, data, reducer, setContextData }) => {
+const DataTable = ({ name, columns, data, reducer, setContextData, addRow }) => {
   const classes = useStyles();
   const [state, dispatch] = reducer;
 
@@ -449,13 +453,13 @@ const DataTable = ({ name, columns, data, reducer, setContextData }) => {
     dispatch({
       type: "SET",
       key: "currIdx",
-      value: rowMeta.dataIndex,
+      value: rowMeta?.dataIndex || state.data.length,
     });
     dispatch({
       type: "SET",
       key: "tmpData",
       reset: true,
-      value: rowData,
+      value: rowData instanceof Event ? [] : rowData,
     });
     dispatch({
       type: "SET",
@@ -463,6 +467,7 @@ const DataTable = ({ name, columns, data, reducer, setContextData }) => {
       value: true,
     });
   };
+
   return (
     <MUIDataTable
       title={name}
@@ -472,10 +477,33 @@ const DataTable = ({ name, columns, data, reducer, setContextData }) => {
       options={{
         filterType: "checkbox",
         onRowClick: handleEdit,
+        customToolbar: () => {
+          return <CustomToolbar handleClick={handleEdit} />
+        }
       }}
     />
   );
 };
+
+const defaultToolbarStyle = {
+  iconButton: {
+
+  }
+};
+
+const ToolbarEditor = ({ classes, handleClick }) => {
+  return (
+    <>
+      <Tooltip title={"Add Item"}>
+        <IconButton className={classes.iconButton} onClick={handleClick}>
+          <AddIcon className={classes.deleteIcon} />
+        </IconButton>
+      </Tooltip>
+    </>
+  );
+}
+
+const CustomToolbar = withStyles(defaultToolbarStyle, {name: "CustomToolbar"})(ToolbarEditor);
 
 const ExpansionTable = ({
   name,
@@ -521,6 +549,7 @@ const ExpansionTable = ({
             columns={columns}
             reducer={[state, dispatch]}
             setContextData={setContextData}
+
           />
         </ExpansionPanelDetails>
       </ExpansionPanel>
