@@ -17,52 +17,57 @@ import { sendToSrvr } from "../Lib/connections";
 import "../../assets/index.css";
 
 const routes = [
-  { id: 0, path: ["/"], name: "Landing", component: <Landing /> },
-  { id: 1, path: ["/cigars"], name: "Cigars", component: <Products /> },
-  { id: 3, path: ["/about"], name: "About", component: <About /> },
-  { id: 4, path: ["/dashboard"], name: "Dashboard", component: <Dashboard /> },
+    { id: 0, path: ["/"], name: "Landing", component: <Landing /> },
+    { id: 1, path: ["/cigars"], name: "Cigars", component: <Products /> },
+    { id: 3, path: ["/about"], name: "About", component: <About /> },
+    {
+        id: 4,
+        path: ["/dashboard"],
+        name: "Dashboard",
+        component: <Dashboard />,
+    },
 ];
 
 const initialState = {
-  about: [],
-  experience: [],
-  annoucements: [],
-  events: [],
-  landing_pics: [Cigars, Lounge, PepBurn, Store],
-  products: [],
-  hours: [],
-  token: "",
+    about: [],
+    experience: [],
+    annoucements: [],
+    events: [],
+    landing_pics: [Cigars, Lounge, PepBurn, Store],
+    products: [],
+    hours: [],
+    token: "",
 };
 
 const Header = ({ pics }) => {
-  return (
-    <>
-      <Nav />
-      <RotatingPics
-        pics={pics.length < 4 ? [Cigars, Lounge, PepBurn, Store] : pics}
-      />
-    </>
-  );
+    return (
+        <>
+            <Nav />
+            <RotatingPics
+                pics={pics.length < 4 ? [Cigars, Lounge, PepBurn, Store] : pics}
+            />
+        </>
+    );
 };
 
 const App = () => {
-  const [pics, setPics] = useState([]);
+    const [pics, setPics] = useState([]);
 
-  useEffect(() => {
-    sendToSrvr("api/v1/general/landing_pictures").then((formatted) =>
-      setPics(formatted)
+    useEffect(() => {
+        sendToSrvr("api/v1/general/landing_pictures").then((formatted) =>
+            setPics(formatted["data"])
+        );
+    }, []);
+
+    return (
+        <GlobalStore stateI={initialState}>
+            <Routing
+                className={"full-container"}
+                Header={<Header pics={pics["data"] || []} />}
+                routes={routes}
+            ></Routing>
+        </GlobalStore>
     );
-  }, []);
-
-  return (
-    <GlobalStore stateI={initialState}>
-      <Routing
-        className={"full-container"}
-        Header={<Header pics={pics["data"] || []} />}
-        routes={routes}
-      ></Routing>
-    </GlobalStore>
-  );
 };
 
 export default App;
