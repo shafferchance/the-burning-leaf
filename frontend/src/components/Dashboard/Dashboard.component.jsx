@@ -4,15 +4,17 @@ import {
     MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
+import AddIcon from "@material-ui/icons/Add";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import SearchIcon from "@material-ui/icons/Search";
 import MUIDataTable from "mui-datatables";
 import Carousel from "react-material-ui-carousel";
-import React, { useState, useReducer } from "react";
+import React, { useState, useReducer, useEffect } from "react";
 import { useCustomContext } from "react-global-light";
 import PublishIcon from "@material-ui/icons/Publish";
-import AddIcon from "@material-ui/icons/Add";
 import Login from "../Lib/Login/Login.component";
 import {
+    AppBar,
     Dialog,
     DialogContent,
     DialogActions,
@@ -25,16 +27,19 @@ import {
     Typography,
     IconButton,
     Input,
+    Fab,
     Fade,
     Backdrop,
     makeStyles,
     Checkbox,
     CardMedia,
+    Toolbar,
     Tooltip,
     withStyles,
     ThemeProvider,
     useMediaQuery,
     createMuiTheme,
+    Paper,
 } from "@material-ui/core";
 
 import Cigars from "../App/cigars.jpeg";
@@ -42,6 +47,8 @@ import Lounge from "../App/lounge.jpeg";
 import PepBurn from "../App/people_burning.jpeg";
 import Store from "../App/store_front.jpeg";
 import { sendToSrvr } from "../Lib/connections";
+import { SearchBarCtrld } from "../Lib/AppBar/SearchBar.component";
+import { CollectionList } from "../Lib/CardList/CardList.component";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -67,6 +74,21 @@ const useStyles = makeStyles((theme) => ({
     heading: {
         fontSize: theme.typography.pxToRem(15),
         fontWeight: theme.typography.fontWeightRegular,
+    },
+    appBar: {
+        top: "auto",
+        bottom: 0,
+    },
+    grow: {
+        flexGrow: 1,
+    },
+    fabButton: {
+        position: "absolute",
+        zIndex: 1,
+        top: -30,
+        left: 0,
+        right: 0,
+        margin: "0 auto",
     },
 }));
 
@@ -119,12 +141,25 @@ const handleFile = (file) => {
     });
 };
 
-const EditModal = ({ editFields, reducer }) => {
-    const [state, dispatch] = reducer;
+const EditModal = ({
+    editFields,
+    state,
+    setState,
+    editing,
+    onClose,
+    entry,
+}) => {
+    const [tmpData, setTmpData] = useReducer(StateMutate, {
+        data: state.length > 0 ? state : editFields.map(() => ""),
+    });
     const classes = useStyles();
 
     const handleClose = () => {
-        dispatch({
+        if (onClose) {
+            onClose();
+            return;
+        }
+        setState({
             type: "SET",
             key: "editing",
             value: false,
@@ -136,9 +171,9 @@ const EditModal = ({ editFields, reducer }) => {
         console.log(e.constructor);
         switch (e.constructor.name) {
             case "Date":
-                dispatch({
-                    type: "SET",
-                    key: "tmpData",
+                setTmpData({
+                    type: "SET_ARRAY_ELE",
+                    key: "data",
                     idx: val,
                     value: e,
                 });
@@ -146,9 +181,15 @@ const EditModal = ({ editFields, reducer }) => {
             case "File":
                 handleFile(e)
                     .then((result) =>
-                        dispatch({
-                            type: "SET",
-                            key: "tmpData",
+                        // setState({
+                        //     type: "SET",
+                        //     key: "tmpData",
+                        //     idx: val,
+                        //     value: result,
+                        // })
+                        setTmpData({
+                            type: "SET_ARRAY_ELE",
+                            key: "data",
                             idx: val,
                             value: result,
                         })
@@ -158,9 +199,9 @@ const EditModal = ({ editFields, reducer }) => {
             case "SyntheticEvent":
                 const { id, value } = e.target;
                 console.log("--> Syn Eve: ", id, value);
-                dispatch({
-                    type: "SET",
-                    key: "tmpData",
+                setTmpData({
+                    type: "SET_ARRAY_ELE",
+                    key: "data",
                     idx: id,
                     value: value,
                 });
@@ -172,32 +213,23 @@ const EditModal = ({ editFields, reducer }) => {
     };
 
     const handleSubmit = () => {
-        state.tmpData = state.tmpData.map((val) => {
+        tmpData = tmpData.map((val) => {
             if (val instanceof Object) {
                 return val.toString();
             }
             return val;
         });
-        dispatch({
-            type: "SET",
-            key: "data",
-            value: state.tmpData,
-        });
-        dispatch({
-            type: "SET",
-            key: "currIdx",
-            value: -1,
-        });
-        dispatch({
-            type: "SET",
-            key: "tmpData",
-            value: [],
+        setState({
+            type: "SET_ARRAY_ELE",
+            key: entry || state.entry,
+            idx: state.currIdx,
+            value: tmpData,
         });
         handleClose();
     };
     const renderFields = () => {
         return editFields.map((val, idx) => {
-            console.log("--> Val at index ", idx, ": ", state.tmpData[idx]);
+            // console.log("--> Val at index ", idx, ": ", state.tmpData[idx]);
             return !val.comp ? (
                 <TextField
                     id={String(idx)}
@@ -219,7 +251,7 @@ const EditModal = ({ editFields, reducer }) => {
     };
 
     // console.log(state.tmpData);
-    console.log(reducer);
+    // console.log(reducer);
     return (
         <Dialog
             id={"edit-dialog"}
@@ -228,7 +260,7 @@ const EditModal = ({ editFields, reducer }) => {
             aria-describedby={"edit-dialog-description"}
             className={classes.modal}
             onClose={handleClose}
-            open={state.editing}
+            open={editing}
             BackdropComponent={Backdrop}
             BackdropProps={{
                 timeout: 500,
@@ -319,16 +351,8 @@ const removeFromItem = (state, action) => {
     }
 };
 
-const DataTable = ({
-    name,
-    columns,
-    data,
-    reducer,
-    setContextData,
-    addRow,
-}) => {
+const DataTable = ({ name, columns, data, setContextData, addRow }) => {
     const classes = useStyles();
-    const [state, dispatch] = reducer;
 
     const handleEdit = (rowData, rowMeta) => {
         console.log(rowData, rowMeta);
@@ -354,7 +378,7 @@ const DataTable = ({
         <MUIDataTable
             title={name}
             columns={columns}
-            data={state.data}
+            data={data}
             className={classes.root}
             options={{
                 filterType: "checkbox",
@@ -392,6 +416,7 @@ const CustomToolbar = withStyles(defaultToolbarStyle, {
 
 const ExpansionTable = ({
     name,
+    property,
     columns,
     data,
     setContextData,
@@ -399,24 +424,12 @@ const ExpansionTable = ({
     timeout,
 }) => {
     const classes = useStyles();
-    const [state, dispatch] = useReducer(
-        (state, action) => {
-            switch (action.type) {
-                case "SET":
-                    return addToItem(state, action);
-                case "DELETE":
-                    return removeFromItem(state, action);
-                default:
-                    return state;
-            }
-        },
-        {
-            data: data,
-            editing: false,
-            currIdx: -1,
-            tmpData: [],
-        }
-    );
+    const [state, dispatch] = useReducer(StateMutate, {
+        data: data,
+        editing: false,
+        currIdx: -1,
+        tmpData: [],
+    });
 
     return (
         <div className={classes.root}>
@@ -440,7 +453,10 @@ const ExpansionTable = ({
             <EditModal
                 key="editing-modal"
                 editFields={editFields}
-                reducer={[state, dispatch]}
+                state={state.tmpData}
+                editing={state.editing}
+                setState={dispatch}
+                entry={property}
             />
         </div>
     );
@@ -472,6 +488,65 @@ const ImageUpload = ({ value, src, idx, onChange }) => {
     );
 };
 
+const ExpansionGrid = ({ title, editFields, state, setContextState, prop }) => {
+    const [tmpState, setTmpState] = useReducer(StateMutate, {
+        data: state,
+        editing: false,
+        currIdx: -1,
+        tmpData: [],
+    });
+    const [filter, setFilter] = useState("");
+    const classes = useStyles();
+
+    const handleAdd = () => setEditing(true);
+    const handleFilterChange = (e) => setFilter(e.target.value);
+
+    return (
+        <>
+            <ExpansionPanel>
+                <ExpansionPanelSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls={`${title}-content`}
+                    aria-label={`${title}-header`}
+                >
+                    <Typography className={classes.heading}>{title}</Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                    <CollectionList tiles={state} />
+                    <AppBar
+                        position={"relative"}
+                        color={"primary"}
+                        className={classes.appBar}
+                    >
+                        <Toolbar>
+                            <Fab
+                                color="secondary"
+                                aria-label={"add"}
+                                className={classes.fabButton}
+                                onClick={handleAdd}
+                            >
+                                <AddIcon />
+                            </Fab>
+                            <SearchBarCtrld
+                                value={filter}
+                                setValue={handleFilterChange}
+                            />
+                        </Toolbar>
+                    </AppBar>
+                </ExpansionPanelDetails>
+            </ExpansionPanel>
+            <EditModal
+                key="editing-modal"
+                editFields={editFields}
+                state={state.tmpData}
+                setState={setTmpState}
+                editing={state.editing}
+                entry={prop || title}
+            />
+        </>
+    );
+};
+
 const StateMutate = (state, action) => {
     switch (action.type) {
         case "ADD_ARRAY":
@@ -481,6 +556,9 @@ const StateMutate = (state, action) => {
             };
         case "RM_ARRAY":
             state[action.key].splice(action.value, action.number || 1);
+            return { ...state };
+        case "SET_ARRAY_ELE":
+            state[action.key][action.idx] = action.value;
             return { ...state };
         case "SET":
             return { ...state, [action.key]: action.value };
@@ -598,10 +676,9 @@ const Dashboard = () => {
 
     return (
         <ThemeProvider theme={theme}>
-            <div
+            <Paper
                 style={{
                     position: "fixed",
-                    backgroundColor: "white",
                     border: "1px solid black",
                     borderRadius: "5px",
                     width: "100vw",
@@ -677,36 +754,6 @@ const Dashboard = () => {
                     name={"Announcements"}
                 />
                 <ExpansionTable
-                    columns={["Brand Name", "Logo", "Description", "Popular"]}
-                    data={products}
-                    setData={setTestState}
-                    name={"Products"}
-                    editFields={[
-                        {
-                            type: "text",
-                            label: "Brand Name: ",
-                        },
-                        {
-                            // TODO: Add image proper here
-                            type: "text",
-                            label: "Logo",
-                        },
-                        {
-                            type: "text",
-                            label: "Description: ",
-                        },
-                        {
-                            comp: (val, onChange) => (
-                                <Checkbox
-                                    checked={val}
-                                    onChange={onChange}
-                                    color={"primary"}
-                                />
-                            ),
-                        },
-                    ]}
-                />
-                <ExpansionTable
                     columns={["Day of the Week", "Open", "Close"]}
                     data={hours}
                     setData={setTestState}
@@ -745,13 +792,37 @@ const Dashboard = () => {
                         },
                     ]}
                 />
-
+                <ExpansionGrid
+                    title={"Products"}
+                    state={products}
+                    setState={reducer}
+                    editFields={[
+                        {
+                            comp: (val, onChange, idx) => (
+                                <ImageUpload
+                                    idx={idx}
+                                    onChange={onChange}
+                                    src={val || null}
+                                    value={val || null}
+                                />
+                            ),
+                        },
+                        {
+                            type: "text",
+                            label: "Brand: ",
+                        },
+                        {
+                            type: "text",
+                            label: "Description: ",
+                        },
+                    ]}
+                />
                 <Login
                     setState={reducer}
                     open={!login}
                     onLogin={loginSuccess}
                 />
-            </div>
+            </Paper>
         </ThemeProvider>
     );
 };

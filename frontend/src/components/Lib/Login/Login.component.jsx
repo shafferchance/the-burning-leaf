@@ -57,7 +57,7 @@ const Login = ({ setState, setLogin, open, onLogin, onClose }) => {
                 }
                 if (result.message === "success") {
                     setErrors({ user: "", pass: "" });
-                    setState(token);
+                    // setState(token);
                     if (setLogin) {
                         setLogin(true);
                     }
