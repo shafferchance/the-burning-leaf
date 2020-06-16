@@ -147,6 +147,7 @@ const EditModal = ({
     setState,
     editing,
     onClose,
+    currIdx,
     entry,
 }) => {
     const [tmpData, setTmpData] = useReducer(StateMutate, {
@@ -213,17 +214,22 @@ const EditModal = ({
     };
 
     const handleSubmit = () => {
-        tmpData = tmpData.map((val) => {
+        const sanitized = tmpData.data.map((val) => {
             if (val instanceof Object) {
                 return val.toString();
             }
             return val;
         });
         setState({
+          type: "SET",
+          key: 'tmpData',
+          value: []
+        });
+        setState({
             type: "SET_ARRAY_ELE",
-            key: entry || state.entry,
-            idx: state.currIdx,
-            value: tmpData,
+            key: entry || tmpData.entry,
+            idx: currIdx,
+            value: sanitized,
         });
         handleClose();
     };
@@ -235,12 +241,12 @@ const EditModal = ({
                     id={String(idx)}
                     type={val.type}
                     label={val.label}
-                    value={state.tmpData?.[idx] || ""}
+                    value={tmpData.data?.[idx] || ""}
                     onChange={handleValue}
                 />
             ) : typeof val.comp === "function" ? (
                 val.comp(
-                    state.tmpData?.[idx] || null,
+                    tmpData.data?.[idx] || null,
                     (e) => handleValue(e, idx),
                     String(idx)
                 )
@@ -351,21 +357,22 @@ const removeFromItem = (state, action) => {
     }
 };
 
-const DataTable = ({ name, columns, data, setContextData, addRow }) => {
+const DataTable = ({ name, columns, addRow, reducer }) => {
     const classes = useStyles();
+    const [state, dispatch] = reducer;
 
     const handleEdit = (rowData, rowMeta) => {
         console.log(rowData, rowMeta);
         dispatch({
             type: "SET",
             key: "currIdx",
-            value: rowMeta?.dataIndex || state.data.length,
+            value: rowMeta.dataIndex >= 0 ? rowMeta.dataIndex : state.data.length,
         });
         dispatch({
             type: "SET",
             key: "tmpData",
             reset: true,
-            value: rowData instanceof Event ? [] : rowData,
+            value: rowData,
         });
         dispatch({
             type: "SET",
@@ -378,7 +385,7 @@ const DataTable = ({ name, columns, data, setContextData, addRow }) => {
         <MUIDataTable
             title={name}
             columns={columns}
-            data={data}
+            data={state.data}
             className={classes.root}
             options={{
                 filterType: "checkbox",
@@ -455,6 +462,7 @@ const ExpansionTable = ({
                 editFields={editFields}
                 state={state.tmpData}
                 editing={state.editing}
+                currIdx={state.currIdx}
                 setState={dispatch}
                 entry={property}
             />
@@ -488,7 +496,7 @@ const ImageUpload = ({ value, src, idx, onChange }) => {
     );
 };
 
-const ExpansionGrid = ({ title, editFields, state, setContextState, prop }) => {
+const ExpansionGrid = ({ title, editFields, state, setContextState, entry }) => {
     const [tmpState, setTmpState] = useReducer(StateMutate, {
         data: state,
         editing: false,
@@ -498,7 +506,11 @@ const ExpansionGrid = ({ title, editFields, state, setContextState, prop }) => {
     const [filter, setFilter] = useState("");
     const classes = useStyles();
 
-    const handleAdd = () => setEditing(true);
+    const handleAdd = () => setTmpState({
+      type: "SET",
+      key: "editing",
+      value: true
+    });
     const handleFilterChange = (e) => setFilter(e.target.value);
 
     return (
@@ -512,7 +524,7 @@ const ExpansionGrid = ({ title, editFields, state, setContextState, prop }) => {
                     <Typography className={classes.heading}>{title}</Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
-                    <CollectionList tiles={state} />
+                    <CollectionList tiles={tmpState.data} />
                     <AppBar
                         position={"relative"}
                         color={"primary"}
@@ -538,16 +550,17 @@ const ExpansionGrid = ({ title, editFields, state, setContextState, prop }) => {
             <EditModal
                 key="editing-modal"
                 editFields={editFields}
-                state={state.tmpData}
+                state={tmpState.tmpData}
                 setState={setTmpState}
-                editing={state.editing}
-                entry={prop || title}
+                editing={tmpState.editing}
+                entry={entry || title}
             />
         </>
     );
 };
 
 const StateMutate = (state, action) => {
+    console.log(action);
     switch (action.type) {
         case "ADD_ARRAY":
             return {
@@ -720,6 +733,7 @@ const Dashboard = () => {
                     ]}
                     setData={setTestState}
                     name={"Event"}
+                    property={"data"}
                 />
                 <ExpansionTable
                     columns={["Date", "Message"]}
@@ -752,12 +766,14 @@ const Dashboard = () => {
                     ]}
                     setData={annoucements}
                     name={"Announcements"}
+                    property={"data"}
                 />
                 <ExpansionTable
                     columns={["Day of the Week", "Open", "Close"]}
-                    data={hours}
+                    data={[["Monday","",""],["Tuesday","",""], ["Wednesday","",""], ["Thursday","",""], ["Friday","",""], ["Saturday","",""], ["Sunday","",""]]}
                     setData={setTestState}
                     name={"Hours"}
+                    property={"data"}
                     editFields={[
                         {
                             comp: (val) => (
@@ -796,6 +812,7 @@ const Dashboard = () => {
                     title={"Products"}
                     state={products}
                     setState={reducer}
+                    entry={"data"}
                     editFields={[
                         {
                             comp: (val, onChange, idx) => (
