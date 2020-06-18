@@ -221,9 +221,9 @@ const EditModal = ({
             return val;
         });
         setState({
-          type: "SET",
-          key: 'tmpData',
-          value: []
+            type: "SET",
+            key: "tmpData",
+            value: [],
         });
         setState({
             type: "SET_ARRAY_ELE",
@@ -366,7 +366,11 @@ const DataTable = ({ name, columns, addRow, reducer }) => {
         dispatch({
             type: "SET",
             key: "currIdx",
-            value: rowMeta.dataIndex >= 0 ? rowMeta.dataIndex : state.data.length,
+            value: rowMeta
+                ? rowMeta.dataIndex >= 0
+                    ? rowMeta.dataIndex
+                    : state.data.length
+                : state.data.length,
         });
         dispatch({
             type: "SET",
@@ -496,9 +500,44 @@ const ImageUpload = ({ value, src, idx, onChange }) => {
     );
 };
 
-const ExpansionGrid = ({ title, editFields, state, setContextState, entry }) => {
+const ExpansionGrid = ({
+    title,
+    editFields,
+    state,
+    setContextState,
+    entry,
+}) => {
     const [tmpState, setTmpState] = useReducer(StateMutate, {
-        data: state,
+        data: [
+            [
+                "https://picsum.photos/seed/picsum/200/300",
+                "hello",
+                "world",
+                false,
+            ],
+            ["https://picsum.photos/seed/picsum/200/350", "two", "three", true],
+            ["https://picsum.photos/seed/picsum/200/400", "four", "five", true],
+            [
+                "https://picsum.photos/seed/picsum/200/100",
+                "three",
+                "six",
+                false,
+            ],
+            ["https://picsum.photos/seed/picsum/230/100", "three", "six", true],
+            ["https://picsum.photos/seed/adsfdf/200/100", "three", "six", true],
+            [
+                "https://picsum.photos/seed/qeqqrqr/200/100",
+                "three",
+                "six",
+                true,
+            ],
+            [
+                "https://picsum.photos/seed/eqrwrqwd/200/100",
+                "three",
+                "six",
+                false,
+            ],
+        ],
         editing: false,
         currIdx: -1,
         tmpData: [],
@@ -506,11 +545,18 @@ const ExpansionGrid = ({ title, editFields, state, setContextState, entry }) => 
     const [filter, setFilter] = useState("");
     const classes = useStyles();
 
-    const handleAdd = () => setTmpState({
-      type: "SET",
-      key: "editing",
-      value: true
-    });
+    const handleAdd = () => {
+        setTmpState({
+            type: "SET",
+            key: "editing",
+            value: true,
+        });
+        setTmpState({
+            type: "SET",
+            key: "currIdx",
+            value: tmpState.data.length,
+        });
+    };
     const handleFilterChange = (e) => setFilter(e.target.value);
 
     return (
@@ -525,7 +571,7 @@ const ExpansionGrid = ({ title, editFields, state, setContextState, entry }) => 
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                     <CollectionList tiles={tmpState.data} />
-                    <AppBar
+                    {/* <AppBar
                         position={"relative"}
                         color={"primary"}
                         className={classes.appBar}
@@ -544,7 +590,7 @@ const ExpansionGrid = ({ title, editFields, state, setContextState, entry }) => 
                                 setValue={handleFilterChange}
                             />
                         </Toolbar>
-                    </AppBar>
+                    </AppBar> */}
                 </ExpansionPanelDetails>
             </ExpansionPanel>
             <EditModal
@@ -554,6 +600,7 @@ const ExpansionGrid = ({ title, editFields, state, setContextState, entry }) => 
                 setState={setTmpState}
                 editing={tmpState.editing}
                 entry={entry || title}
+                currIdx={tmpState.currIdx}
             />
         </>
     );
@@ -770,7 +817,15 @@ const Dashboard = () => {
                 />
                 <ExpansionTable
                     columns={["Day of the Week", "Open", "Close"]}
-                    data={[["Monday","",""],["Tuesday","",""], ["Wednesday","",""], ["Thursday","",""], ["Friday","",""], ["Saturday","",""], ["Sunday","",""]]}
+                    data={[
+                        ["Monday", "", ""],
+                        ["Tuesday", "", ""],
+                        ["Wednesday", "", ""],
+                        ["Thursday", "", ""],
+                        ["Friday", "", ""],
+                        ["Saturday", "", ""],
+                        ["Sunday", "", ""],
+                    ]}
                     setData={setTestState}
                     name={"Hours"}
                     property={"data"}

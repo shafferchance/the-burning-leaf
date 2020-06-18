@@ -12,14 +12,14 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        flex: "1 0 auto",
         display: "flex",
+        flexWrap: "wrap",
         justifyContent: "space-around",
         overflow: "hidden",
         backgroundColor: theme.palette.background.paper,
     },
     gridList: {
-        flex: "1 0 auto",
+        flex: "1 0",
         transform: "translateZ(0)",
     },
     titleBar: {
@@ -36,7 +36,7 @@ export const CollectionItem = ({ img, title, desc, featured }) => {
     const classes = useStyles();
 
     return (
-        <GridListTile key={img} cols={featured ? 2 : 1} rows={featured ? 2 : 1}>
+        <GridListTile cols={featured ? 2 : 1} rows={featured ? 2 : 1}>
             <img src={img} alt={title} />
             <GridListTileBar
                 title={title}
@@ -61,12 +61,28 @@ export const CollectionList = ({ tiles }) => {
     return (
         <Paper className={classes.root}>
             <GridList cellHeight={200} spacing={1} className={classes.gridList}>
-                {tiles.map((tile) => (
-                    <CollectionItem
-                        title={tile.title}
-                        img={tile.img}
-                        featured={tile.featured}
-                    />
+                {tiles.map((tile, index) => (
+                    <GridListTile
+                        cols={tile[3] ? 2 : 1}
+                        rows={tile[3] ? 2 : 1}
+                        key={index}
+                    >
+                        <img src={tile[0]} alt={tile[1]} />
+                        <GridListTileBar
+                            title={tile[1]}
+                            titlePosition={"top"}
+                            actionIcon={
+                                <IconButton
+                                    aria-label={`Expand-${tile[1]}`}
+                                    className={classes.icon}
+                                >
+                                    <ExpandMoreIcon />
+                                </IconButton>
+                            }
+                            actionPosition={"left"}
+                            className={classes.titleBar}
+                        />
+                    </GridListTile>
                 ))}
             </GridList>
         </Paper>
