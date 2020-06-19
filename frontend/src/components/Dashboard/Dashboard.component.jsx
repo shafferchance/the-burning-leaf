@@ -15,6 +15,7 @@ import PublishIcon from "@material-ui/icons/Publish";
 import Login from "../Lib/Login/Login.component";
 import {
     AppBar,
+    Box,
     Dialog,
     DialogContent,
     DialogActions,
@@ -40,6 +41,8 @@ import {
     useMediaQuery,
     createMuiTheme,
     Paper,
+    Tabs,
+    Tab,
 } from "@material-ui/core";
 
 import Cigars from "../App/cigars.jpeg";
@@ -105,30 +108,17 @@ const LandingPics = ({ pictures, mutate }) => {
     };
 
     return (
-        <ExpansionPanel>
-            <ExpansionPanelSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls={"Landing-Images-content"}
-                id={"Landing-Images-header"}
-            >
-                <Typography className={classes.heading}>
-                    Landing Pictures
-                </Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
-                <Carousel animation="slide">
-                    {pictures.map((val, idx) => (
-                        <ImageUpload
-                            src={val}
-                            value={null}
-                            onChange={handleChange}
-                            idx={idx}
-                            key={idx}
-                        />
-                    ))}
-                </Carousel>
-            </ExpansionPanelDetails>
-        </ExpansionPanel>
+        <Carousel animation="slide">
+            {pictures.map((val, idx) => (
+                <ImageUpload
+                    src={val}
+                    value={null}
+                    onChange={handleChange}
+                    idx={idx}
+                    key={idx}
+                />
+            ))}
+        </Carousel>
     );
 };
 
@@ -384,7 +374,7 @@ const DataTable = ({ name, columns, addRow, reducer }) => {
             value: true,
         });
     };
-
+    console.log(state.data);
     return (
         <MUIDataTable
             title={name}
@@ -425,7 +415,7 @@ const CustomToolbar = withStyles(defaultToolbarStyle, {
     name: "CustomToolbar",
 })(ToolbarEditor);
 
-const ExpansionTable = ({
+const TabTable = ({
     name,
     property,
     columns,
@@ -444,27 +434,16 @@ const ExpansionTable = ({
 
     return (
         <div className={classes.root}>
-            <ExpansionPanel>
-                <ExpansionPanelSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls={`${name}-content`}
-                    id={`${name}-header`}
-                >
-                    <Typography className={classes.heading}>{name}</Typography>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
-                    <DataTable
-                        name={name}
-                        columns={columns}
-                        reducer={[state, dispatch]}
-                        setContextData={setContextData}
-                    />
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
+            <DataTable
+                name={name}
+                columns={columns}
+                reducer={[state, dispatch]}
+                setContextData={setContextData}
+            />
             <EditModal
                 key="editing-modal"
                 editFields={editFields}
-                state={state.tmpData}
+                state={state.data}
                 editing={state.editing}
                 currIdx={state.currIdx}
                 setState={dispatch}
@@ -500,13 +479,7 @@ const ImageUpload = ({ value, src, idx, onChange }) => {
     );
 };
 
-const ExpansionGrid = ({
-    title,
-    editFields,
-    state,
-    setContextState,
-    entry,
-}) => {
+const TabGrid = ({ title, editFields, state, setContextState, entry }) => {
     const [tmpState, setTmpState] = useReducer(StateMutate, {
         data: [
             [
@@ -561,38 +534,29 @@ const ExpansionGrid = ({
 
     return (
         <>
-            <ExpansionPanel>
-                <ExpansionPanelSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls={`${title}-content`}
-                    aria-label={`${title}-header`}
+            <Paper>
+                <CollectionList tiles={tmpState.data} />
+                {/* <AppBar
+                    position={"relative"}
+                    color={"primary"}
+                    className={classes.appBar}
                 >
-                    <Typography className={classes.heading}>{title}</Typography>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
-                    <CollectionList tiles={tmpState.data} />
-                    {/* <AppBar
-                        position={"relative"}
-                        color={"primary"}
-                        className={classes.appBar}
-                    >
-                        <Toolbar>
-                            <Fab
-                                color="secondary"
-                                aria-label={"add"}
-                                className={classes.fabButton}
-                                onClick={handleAdd}
-                            >
-                                <AddIcon />
-                            </Fab>
-                            <SearchBarCtrld
-                                value={filter}
-                                setValue={handleFilterChange}
-                            />
-                        </Toolbar>
-                    </AppBar> */}
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
+                    <Toolbar>
+                        <Fab
+                            color="secondary"
+                            aria-label={"add"}
+                            className={classes.fabButton}
+                            onClick={handleAdd}
+                        >
+                            <AddIcon />
+                        </Fab>
+                        <SearchBarCtrld
+                            value={filter}
+                            setValue={handleFilterChange}
+                        />
+                    </Toolbar>
+                </AppBar> */}
+            </Paper>
             <EditModal
                 key="editing-modal"
                 editFields={editFields}
@@ -630,11 +594,27 @@ const StateMutate = (state, action) => {
     }
 };
 
+const TabPanel = ({ value, index, children, ...other }) => {
+    console.log(children);
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`tabpanel-${index}`}
+            aria-labelledby={`tab-${index}`}
+            {...other}
+        >
+            {value === index && <Box p={3}>{children}</Box>}
+        </div>
+    );
+};
+
 const Dashboard = () => {
     const preferDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
     const [darkModeOn, setDarkModeOn] = useState(preferDarkMode);
     const [login, setLogin] = useState(false);
     const [testState, setTestState] = useState([["", "test"]]);
+    const [value, setValue] = useState(0);
     const classes = useStyles();
     const [
         {
@@ -686,12 +666,18 @@ const Dashboard = () => {
             reducer({
                 type: "SET",
                 key: "events",
-                value: results[1].data,
+                value: results[1].data.map((val) => [
+                    val.Date.value,
+                    val.Message.value,
+                ]),
             });
             reducer({
                 type: "SET",
                 key: "annoucements",
-                value: results[2].data,
+                value: results[2].data.map((val) => [
+                    val.Date.value,
+                    val.Message.value,
+                ]),
             });
             reducer({
                 type: "setValue",
@@ -734,32 +720,46 @@ const Dashboard = () => {
         reader.readAsDataURL(file);
     };
 
+    const handleTabChange = (event, newValue) => {
+        setValue(newValue);
+    };
+
+    function a11yProps(index) {
+        return {
+            id: `tab-${index}`,
+            "aria-controls": `tabpanel-${index}`,
+        };
+    }
+
     return (
         <ThemeProvider theme={theme}>
-            <Paper
-                style={{
-                    position: "fixed",
-                    border: "1px solid black",
-                    borderRadius: "5px",
-                    width: "100vw",
-                    height: "100vh",
-                    zIndex: 999,
-                }}
-                className={"center"}
-            >
+            <AppBar position="static">
+                <Tabs value={value} onChange={handleTabChange}>
+                    <Tab label="Landing Pictures" {...a11yProps(0)} />
+                    <Tab label="Events" {...a11yProps(1)} />
+                    <Tab label="Announcements" {...a11yProps(2)} />
+                    <Tab label="Hours" {...a11yProps(3)} />
+                    <Tab label="Products" {...a11yProps(4)} />
+                </Tabs>
+            </AppBar>
+            <TabPanel value={value} index={0}>
                 <LandingPics pictures={landing_pics} />
-                <ExpansionTable
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+                <TabTable
                     columns={["Date", "Message"]}
-                    data={events}
+                    data={events || []}
                     editFields={[
                         {
-                            comp: (val, onChange) => {
+                            comp: (val, onChange, idx) => {
                                 return (
                                     <MuiPickersUtilsProvider
                                         utils={DateFnsUtils}
                                     >
                                         <KeyboardDateTimePicker
                                             autoOk={true}
+                                            id={idx}
+                                            key={idx}
                                             variant={"inline"}
                                             label={"Date"}
                                             format={"dd/MM/yyyy HH:mm"}
@@ -779,12 +779,14 @@ const Dashboard = () => {
                         },
                     ]}
                     setData={setTestState}
-                    name={"Event"}
+                    name={"Events"}
                     property={"data"}
                 />
-                <ExpansionTable
+            </TabPanel>
+            <TabPanel value={value} index={2}>
+                <TabTable
                     columns={["Date", "Message"]}
-                    data={testState}
+                    data={annoucements}
                     editFields={[
                         {
                             comp: (val, onChange, idx) => (
@@ -815,7 +817,9 @@ const Dashboard = () => {
                     name={"Announcements"}
                     property={"data"}
                 />
-                <ExpansionTable
+            </TabPanel>
+            <TabPanel value={value} index={3}>
+                <TabTable
                     columns={["Day of the Week", "Open", "Close"]}
                     data={[
                         ["Monday", "", ""],
@@ -863,7 +867,9 @@ const Dashboard = () => {
                         },
                     ]}
                 />
-                <ExpansionGrid
+            </TabPanel>
+            <TabPanel value={value} index={4}>
+                <TabGrid
                     title={"Products"}
                     state={products}
                     setState={reducer}
@@ -889,12 +895,20 @@ const Dashboard = () => {
                         },
                     ]}
                 />
-                <Login
-                    setState={reducer}
-                    open={!login}
-                    onLogin={loginSuccess}
-                />
-            </Paper>
+            </TabPanel>
+            <Login setState={reducer} open={!login} onLogin={loginSuccess} />
+            {/* <div
+                style={{
+                    position: "fixed",
+                    border: "1px solid black",
+                    borderRadius: "5px",
+                    width: "100vw",
+                    height: "100vh",
+                    zIndex: 999,
+                }}
+                className={"center"}
+            >
+            </div> */}
         </ThemeProvider>
     );
 };

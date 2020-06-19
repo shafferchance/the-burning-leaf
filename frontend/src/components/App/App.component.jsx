@@ -52,6 +52,7 @@ const Header = ({ pics }) => {
 
 const App = () => {
     const [pics, setPics] = useState([]);
+    const [dashboard, setDashboard] = useState(false);
 
     useEffect(() => {
         sendToSrvr("api/v1/general/landing_pictures").then((formatted) =>
@@ -59,11 +60,19 @@ const App = () => {
         );
     }, []);
 
+    useEffect(() => {
+        if (window.location.pathname === "/dashboard") {
+            setDashboard(true);
+        } else {
+            setDashboard(false);
+        }
+    }, [window.location.pathname]);
+
     return (
         <GlobalStore stateI={initialState}>
             <Routing
                 className={"full-container"}
-                Header={<Header pics={pics["data"] || []} />}
+                Header={dashboard ? null : <Header pics={pics["data"] || []} />}
                 routes={routes}
             ></Routing>
         </GlobalStore>
