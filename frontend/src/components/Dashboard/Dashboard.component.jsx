@@ -93,6 +93,10 @@ const useStyles = makeStyles((theme) => ({
         right: 0,
         margin: "0 auto",
     },
+    fullContainer: {
+        width: "100%",
+        height: "100%",
+    },
 }));
 
 const LandingPics = ({ pictures, mutate }) => {
@@ -374,7 +378,6 @@ const DataTable = ({ name, columns, addRow, reducer }) => {
             value: true,
         });
     };
-    console.log(state.data);
     return (
         <MUIDataTable
             title={name}
@@ -533,30 +536,8 @@ const TabGrid = ({ title, editFields, state, setContextState, entry }) => {
     const handleFilterChange = (e) => setFilter(e.target.value);
 
     return (
-        <>
-            <Paper>
-                <CollectionList tiles={tmpState.data} />
-                {/* <AppBar
-                    position={"relative"}
-                    color={"primary"}
-                    className={classes.appBar}
-                >
-                    <Toolbar>
-                        <Fab
-                            color="secondary"
-                            aria-label={"add"}
-                            className={classes.fabButton}
-                            onClick={handleAdd}
-                        >
-                            <AddIcon />
-                        </Fab>
-                        <SearchBarCtrld
-                            value={filter}
-                            setValue={handleFilterChange}
-                        />
-                    </Toolbar>
-                </AppBar> */}
-            </Paper>
+        <Box style={{ boxSizing: "border-box" }}>
+            <CollectionList tiles={tmpState.data} />
             <EditModal
                 key="editing-modal"
                 editFields={editFields}
@@ -566,12 +547,11 @@ const TabGrid = ({ title, editFields, state, setContextState, entry }) => {
                 entry={entry || title}
                 currIdx={tmpState.currIdx}
             />
-        </>
+        </Box>
     );
 };
 
 const StateMutate = (state, action) => {
-    console.log(action);
     switch (action.type) {
         case "ADD_ARRAY":
             return {
@@ -595,7 +575,6 @@ const StateMutate = (state, action) => {
 };
 
 const TabPanel = ({ value, index, children, ...other }) => {
-    console.log(children);
     return (
         <div
             role="tabpanel"
@@ -742,17 +721,55 @@ const Dashboard = () => {
                     <Tab label="Products" {...a11yProps(4)} />
                 </Tabs>
             </AppBar>
-            <TabPanel value={value} index={0}>
-                <LandingPics pictures={landing_pics} />
-            </TabPanel>
-            <TabPanel value={value} index={1}>
-                <TabTable
-                    columns={["Date", "Message"]}
-                    data={events || []}
-                    editFields={[
-                        {
-                            comp: (val, onChange, idx) => {
-                                return (
+            <Box className={classes.fullContainer}>
+                <TabPanel value={value} index={0}>
+                    <LandingPics pictures={landing_pics} />
+                </TabPanel>
+                <TabPanel value={value} index={1}>
+                    <TabTable
+                        columns={["Date", "Message"]}
+                        data={events || []}
+                        editFields={[
+                            {
+                                comp: (val, onChange, idx) => {
+                                    return (
+                                        <MuiPickersUtilsProvider
+                                            utils={DateFnsUtils}
+                                        >
+                                            <KeyboardDateTimePicker
+                                                autoOk={true}
+                                                id={idx}
+                                                key={idx}
+                                                variant={"inline"}
+                                                label={"Date"}
+                                                format={"dd/MM/yyyy HH:mm"}
+                                                value={val}
+                                                onChange={onChange}
+                                                InputAdornmentProps={{
+                                                    position: "start",
+                                                }}
+                                            />
+                                        </MuiPickersUtilsProvider>
+                                    );
+                                },
+                            },
+                            {
+                                type: "text",
+                                label: "Message",
+                            },
+                        ]}
+                        setData={setTestState}
+                        name={"Events"}
+                        property={"data"}
+                    />
+                </TabPanel>
+                <TabPanel value={value} index={2}>
+                    <TabTable
+                        columns={["Date", "Message"]}
+                        data={annoucements}
+                        editFields={[
+                            {
+                                comp: (val, onChange, idx) => (
                                     <MuiPickersUtilsProvider
                                         utils={DateFnsUtils}
                                     >
@@ -765,137 +782,113 @@ const Dashboard = () => {
                                             format={"dd/MM/yyyy HH:mm"}
                                             value={val}
                                             onChange={onChange}
+                                            autoOk
                                             InputAdornmentProps={{
                                                 position: "start",
                                             }}
                                         />
                                     </MuiPickersUtilsProvider>
-                                );
+                                ),
                             },
-                        },
-                        {
-                            type: "text",
-                            label: "Message",
-                        },
-                    ]}
-                    setData={setTestState}
-                    name={"Events"}
-                    property={"data"}
-                />
-            </TabPanel>
-            <TabPanel value={value} index={2}>
-                <TabTable
-                    columns={["Date", "Message"]}
-                    data={annoucements}
-                    editFields={[
-                        {
-                            comp: (val, onChange, idx) => (
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <KeyboardDateTimePicker
-                                        autoOk={true}
-                                        id={idx}
-                                        key={idx}
-                                        variant={"inline"}
-                                        label={"Date"}
-                                        format={"dd/MM/yyyy HH:mm"}
-                                        value={val}
+                            {
+                                type: "text",
+                                label: "Message",
+                            },
+                        ]}
+                        setData={annoucements}
+                        name={"Announcements"}
+                        property={"data"}
+                    />
+                </TabPanel>
+                <TabPanel value={value} index={3}>
+                    <TabTable
+                        columns={["Day of the Week", "Open", "Close"]}
+                        data={[
+                            ["Monday", "", ""],
+                            ["Tuesday", "", ""],
+                            ["Wednesday", "", ""],
+                            ["Thursday", "", ""],
+                            ["Friday", "", ""],
+                            ["Saturday", "", ""],
+                            ["Sunday", "", ""],
+                        ]}
+                        setData={setTestState}
+                        name={"Hours"}
+                        property={"data"}
+                        editFields={[
+                            {
+                                comp: (val) => (
+                                    <Typography variant={"h4"} gutterBottom>
+                                        {val}
+                                    </Typography>
+                                ),
+                            },
+                            {
+                                comp: (val, onChange) => (
+                                    <MuiPickersUtilsProvider
+                                        utils={DateFnsUtils}
+                                    >
+                                        <KeyboardTimePicker
+                                            label={"Open"}
+                                            mask={"__:__ _M"}
+                                            value={val}
+                                            onChange={onChange}
+                                        />
+                                    </MuiPickersUtilsProvider>
+                                ),
+                            },
+                            {
+                                comp: (val, onChange) => (
+                                    <MuiPickersUtilsProvider
+                                        utils={DateFnsUtils}
+                                    >
+                                        <KeyboardTimePicker
+                                            label={"Close"}
+                                            mask={"__:__ _M"}
+                                            value={val}
+                                            onChange={onChange}
+                                        />
+                                    </MuiPickersUtilsProvider>
+                                ),
+                            },
+                        ]}
+                    />
+                </TabPanel>
+                <TabPanel
+                    value={value}
+                    index={4}
+                    className={classes.fullContainer}
+                >
+                    <TabGrid
+                        title={"Products"}
+                        state={products}
+                        setState={reducer}
+                        entry={"data"}
+                        className={classes.fullContainer}
+                        style={{ boxSizing: "border-box" }}
+                        editFields={[
+                            {
+                                comp: (val, onChange, idx) => (
+                                    <ImageUpload
+                                        idx={idx}
                                         onChange={onChange}
-                                        autoOk
-                                        InputAdornmentProps={{
-                                            position: "start",
-                                        }}
+                                        src={val || null}
+                                        value={val || null}
                                     />
-                                </MuiPickersUtilsProvider>
-                            ),
-                        },
-                        {
-                            type: "text",
-                            label: "Message",
-                        },
-                    ]}
-                    setData={annoucements}
-                    name={"Announcements"}
-                    property={"data"}
-                />
-            </TabPanel>
-            <TabPanel value={value} index={3}>
-                <TabTable
-                    columns={["Day of the Week", "Open", "Close"]}
-                    data={[
-                        ["Monday", "", ""],
-                        ["Tuesday", "", ""],
-                        ["Wednesday", "", ""],
-                        ["Thursday", "", ""],
-                        ["Friday", "", ""],
-                        ["Saturday", "", ""],
-                        ["Sunday", "", ""],
-                    ]}
-                    setData={setTestState}
-                    name={"Hours"}
-                    property={"data"}
-                    editFields={[
-                        {
-                            comp: (val) => (
-                                <Typography variant={"h4"} gutterBottom>
-                                    {val}
-                                </Typography>
-                            ),
-                        },
-                        {
-                            comp: (val, onChange) => (
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <KeyboardTimePicker
-                                        label={"Open"}
-                                        mask={"__:__ _M"}
-                                        value={val}
-                                        onChange={onChange}
-                                    />
-                                </MuiPickersUtilsProvider>
-                            ),
-                        },
-                        {
-                            comp: (val, onChange) => (
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <KeyboardTimePicker
-                                        label={"Close"}
-                                        mask={"__:__ _M"}
-                                        value={val}
-                                        onChange={onChange}
-                                    />
-                                </MuiPickersUtilsProvider>
-                            ),
-                        },
-                    ]}
-                />
-            </TabPanel>
-            <TabPanel value={value} index={4}>
-                <TabGrid
-                    title={"Products"}
-                    state={products}
-                    setState={reducer}
-                    entry={"data"}
-                    editFields={[
-                        {
-                            comp: (val, onChange, idx) => (
-                                <ImageUpload
-                                    idx={idx}
-                                    onChange={onChange}
-                                    src={val || null}
-                                    value={val || null}
-                                />
-                            ),
-                        },
-                        {
-                            type: "text",
-                            label: "Brand: ",
-                        },
-                        {
-                            type: "text",
-                            label: "Description: ",
-                        },
-                    ]}
-                />
-            </TabPanel>
+                                ),
+                            },
+                            {
+                                type: "text",
+                                label: "Brand: ",
+                            },
+                            {
+                                type: "text",
+                                label: "Description: ",
+                            },
+                        ]}
+                    />
+                </TabPanel>
+            </Box>
             <Login setState={reducer} open={!login} onLogin={loginSuccess} />
             {/* <div
                 style={{

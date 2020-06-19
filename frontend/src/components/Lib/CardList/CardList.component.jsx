@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.background.paper,
     },
     gridList: {
-        flex: "1 0",
+        flex: "1 0 auto",
         transform: "translateZ(0)",
     },
     titleBar: {
