@@ -5,6 +5,8 @@ import {
 } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import AddIcon from "@material-ui/icons/Add";
+import Brightness7Icon from "@material-ui/icons/Brightness7";
+import Brightness4Icon from "@material-ui/icons/Brightness4";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import SearchIcon from "@material-ui/icons/Search";
 import MUIDataTable from "mui-datatables";
@@ -94,6 +96,15 @@ const useStyles = makeStyles((theme) => ({
         margin: "0 auto",
     },
     fullContainer: {
+        width: "100%",
+        height: "100%",
+    },
+    gridListContainer: {
+        width: "100%",
+        height: "100%",
+    },
+    mainBackground: {
+        background: theme.palette.background.default,
         width: "100%",
         height: "100%",
     },
@@ -538,6 +549,26 @@ const TabGrid = ({ title, editFields, state, setContextState, entry }) => {
     return (
         <Box style={{ boxSizing: "border-box" }}>
             <CollectionList tiles={tmpState.data} />
+            <AppBar
+                position={"relative"}
+                color={"primary"}
+                className={classes.appBar}
+            >
+                <Toolbar>
+                    <Fab
+                        color="secondary"
+                        aria-label={"add"}
+                        className={classes.fabButton}
+                        onClick={handleAdd}
+                    >
+                        <AddIcon />
+                    </Fab>
+                    <SearchBarCtrld
+                        value={filter}
+                        setValue={handleFilterChange}
+                    />
+                </Toolbar>
+            </AppBar>
             <EditModal
                 key="editing-modal"
                 editFields={editFields}
@@ -618,12 +649,14 @@ const Dashboard = () => {
         token: "",
     });
 
-    const theme = React.useMemo(() =>
-        createMuiTheme({
-            palette: {
-                type: preferDarkMode ? "dark" : "light",
-            },
-        })
+    const theme = React.useMemo(
+        () =>
+            createMuiTheme({
+                palette: {
+                    type: darkModeOn ? "dark" : "light",
+                },
+            }),
+        [darkModeOn]
     );
 
     const loginSuccess = () => {
@@ -703,6 +736,8 @@ const Dashboard = () => {
         setValue(newValue);
     };
 
+    const toggleDarkMode = () => setDarkModeOn(!darkModeOn);
+
     function a11yProps(index) {
         return {
             id: `tab-${index}`,
@@ -720,8 +755,11 @@ const Dashboard = () => {
                     <Tab label="Hours" {...a11yProps(3)} />
                     <Tab label="Products" {...a11yProps(4)} />
                 </Tabs>
+                <IconButton onClick={toggleDarkMode}>
+                    {darkModeOn ? <Brightness4Icon /> : <Brightness7Icon />}
+                </IconButton>
             </AppBar>
-            <Box className={classes.fullContainer}>
+            <Box className={classes.mainBackground}>
                 <TabPanel value={value} index={0}>
                     <LandingPics pictures={landing_pics} />
                 </TabPanel>
@@ -857,7 +895,7 @@ const Dashboard = () => {
                 <TabPanel
                     value={value}
                     index={4}
-                    className={classes.fullContainer}
+                    className={classes.gridListContainer}
                 >
                     <TabGrid
                         title={"Products"}
