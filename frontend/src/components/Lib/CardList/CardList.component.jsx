@@ -1,27 +1,37 @@
 import React, { useState } from "react";
 import {
     makeStyles,
+    Box,
     GridList,
     GridListTile,
     GridListTileBar,
     IconButton,
     Paper,
+    Typography,
+    Collapse,
+    Card,
+    CardMedia,
+    Menu,
+    MenuItem,
+    CardHeader,
+    CardActions,
+    CardContent,
 } from "@material-ui/core";
 
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         display: "flex",
-        flexWrap: "wrap",
         justifyContent: "space-around",
-        overflow: "hidden",
+        overflow: "hidden auto",
         backgroundColor: theme.palette.background.paper,
+        minHeight: 0
     },
-    gridList: {
-        height: "500px",
-        width: "450px",
-        transform: "translateZ(0)",
+    card: {
+        paddingBottom: theme.spacing(2),
+        boxSizing: 'border-box',
     },
     titleBar: {
         background:
@@ -31,61 +41,92 @@ const useStyles = makeStyles((theme) => ({
     icon: {
         color: "white",
     },
+    media: {
+        height: 0,
+        paddingTop: '56.25%',
+    },
+    expand: {
+        transform: 'rotate(0deg)',
+        marginLeft: 'auto',
+        transition: theme.transitions.create('transform', {
+            duration: theme.transitions.duration.shortest,
+        }),
+    },
+    expandOpen: {
+        transform: 'rotate(180deg)'
+    }
 }));
 
 export const CollectionItem = ({ img, title, desc, featured }) => {
     const classes = useStyles();
+    const [show, setShow] = useState(false);
+
+    const handleToggle = () => setShow(!show);
+    const handleSettings = () => console.log("settings");
 
     return (
-        <GridListTile cols={featured ? 2 : 1} rows={featured ? 2 : 1}>
-            <img src={img} alt={title} />
-            <GridListTileBar
-                title={title}
-                titlePosition={"top"}
-                actionIcon={
+        <Box>
+            <Card className={classes.card}>
+                <CardHeader
+                    action={
+                        <IconButton 
+                            aria-labels={`settings-${title}`}
+                            onClick={handleSettings}
+                        >
+                            <MoreVertIcon />
+                        </IconButton>
+                    }
+                    title={title}
+                />
+                <CardMedia
+                    className={classes.media}
+                    src={img}
+                    title={title}
+                    component='img'
+                />
+                <CardActions disableSpacing>
                     <IconButton
-                        aria-label={`Expand-${title}`}
-                        className={classes.icon}
+                        onClick={handleToggle}
+                        aria-expanded={show}
+                        className={show ? `${classes.expand} ${classes.expandOpen}` : classes.expand }
+                        aria-label={"Show more"}
                     >
                         <ExpandMoreIcon />
                     </IconButton>
-                }
-                actionPosition={"left"}
-                className={classes.titleBar}
-            />
-        </GridListTile>
+                </CardActions>
+                <Collapse in={show} timeout="auto" unmountOnExit>
+                    <CardContent>
+                        <Typography>{desc}</Typography>
+                    </CardContent>
+                </Collapse>
+            </Card>
+        </Box>
     );
 };
 
 export const CollectionList = ({ tiles }) => {
     const classes = useStyles();
+    const [indexOpen, setIndexOpen] = useState(-1);
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    const handleOpen = e => {
+        console.log(e.currentTarget);
+        const idx = Number(e.currentTarget.getAttribute('data-idx'));
+        setMenuOpen(false);
+        if (idx === indexOpen) {
+            setIndexOpen(-1);
+            return;
+        }
+        setIndexOpen(idx);
+    }
+
+    const handleSettings = () => menuOpen(!menuOpen)
+
     return (
-        <Paper className={classes.root}>
-            <GridList cellHeight={200} spacing={1} className={classes.gridList}>
-                {tiles.map((tile, index) => (
-                    <GridListTile
-                        cols={tile[3] ? 2 : 1}
-                        rows={tile[3] ? 2 : 1}
-                        key={index}
-                    >
-                        <img src={tile[0]} alt={tile[1]} />
-                        <GridListTileBar
-                            title={tile[1]}
-                            titlePosition={"top"}
-                            actionIcon={
-                                <IconButton
-                                    aria-label={`Expand-${tile[1]}`}
-                                    className={classes.icon}
-                                >
-                                    <ExpandMoreIcon />
-                                </IconButton>
-                            }
-                            actionPosition={"left"}
-                            className={classes.titleBar}
-                        />
-                    </GridListTile>
-                ))}
-            </GridList>
-        </Paper>
+        <Box className={classes.root}>
+            {tiles.map(([image, title, desc, featured], index) => (
+                <CollectionItem title={title} img={image} desc={desc} featured={featured} />
+            ))}
+        </Box>
     );
 };
