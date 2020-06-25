@@ -54,6 +54,7 @@ import Store from "../App/store_front.jpeg";
 import { sendToSrvr } from "../Lib/connections";
 import { SearchBarCtrld } from "../Lib/AppBar/SearchBar.component";
 import { CollectionList } from "../Lib/CardList/CardList.component";
+import { useDarkTheme } from "../Lib/hooks";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -104,9 +105,12 @@ const useStyles = makeStyles((theme) => ({
         height: "100%",
     },
     mainBackground: {
-        background: theme.palette.background.default,
+        backgroundColor: theme.palette.background.default,
         width: "100%",
         height: "100%",
+    },
+    tabBackground: {
+        backgroundColor: theme.palette.background.default,
     },
 }));
 
@@ -186,25 +190,31 @@ const EditModal = ({
                 break;
             case "File":
                 handleFile(e)
-                    .then((result) =>
+                    .then((result) => {
                         // setState({
                         //     type: "SET",
                         //     key: "tmpData",
                         //     idx: val,
                         //     value: result,
                         // })
+                        console.log("--> ", result);
                         setTmpData({
                             type: "SET_ARRAY_ELE",
                             key: "data",
                             idx: val,
                             value: result,
-                        })
-                    )
+                        });
+                    })
                     .catch(console.error);
                 break;
             case "SyntheticEvent":
                 const { id, value } = e.target;
                 console.log("--> Syn Eve: ", id, value);
+                if (e.target.files) {
+                    console.log("--> ", e.target.files[0]);
+                    handleValue(e.target.files[0], val);
+                    break;
+                }
                 setTmpData({
                     type: "SET_ARRAY_ELE",
                     key: "data",
@@ -467,16 +477,29 @@ const TabTable = ({
     );
 };
 
-const ImageUpload = ({ value, src, idx, onChange }) => {
+const ImageUpload = ({ val, onChange, idx }) => {
+    const [files, setFiles] = useState(null);
+
+    const handleFileChange = (e) => {
+        setFiles(e.target.files);
+        // const reader = new FileReader();
+        // reader.addEventListener("loadend", (result) => {
+        //     console.log(result.target.result);
+        //     setPic(result.target.result);
+        // });
+        // reader.readAsDataURL(e.target.files[0]);
+        onChange(e);
+    };
+
     return (
         <>
-            <CardMedia src={src || null} />
+            <CardMedia component="img" src={val || null} />
             <input
                 id={idx}
                 style={{ display: "none" }}
                 type="file"
-                files={value}
-                onChange={onChange}
+                files={files}
+                onChange={handleFileChange}
                 variant="outline"
             />
             <Button
@@ -547,7 +570,10 @@ const TabGrid = ({ title, editFields, state, setContextState, entry }) => {
     const handleFilterChange = (e) => setFilter(e.target.value);
 
     return (
-        <Box style={{ boxSizing: "border-box" }}>
+        <Box
+            className={classes.mainBackground}
+            style={{ boxSizing: "border-box" }}
+        >
             <CollectionList tiles={tmpState.data} />
             <AppBar
                 position={"relative"}
@@ -606,12 +632,14 @@ const StateMutate = (state, action) => {
 };
 
 const TabPanel = ({ value, index, children, ...other }) => {
+    const classes = useStyles();
     return (
         <div
             role="tabpanel"
             hidden={value !== index}
             id={`tabpanel-${index}`}
             aria-labelledby={`tab-${index}`}
+            className={classes.tabBackground}
             {...other}
         >
             {value === index && <Box p={3}>{children}</Box>}
@@ -620,8 +648,7 @@ const TabPanel = ({ value, index, children, ...other }) => {
 };
 
 const Dashboard = () => {
-    const preferDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-    const [darkModeOn, setDarkModeOn] = useState(preferDarkMode);
+    const [theme, toggleTheme] = useDarkTheme();
     const [login, setLogin] = useState(false);
     const [testState, setTestState] = useState([["", "test"]]);
     const [value, setValue] = useState(0);
@@ -648,16 +675,6 @@ const Dashboard = () => {
         hours: [],
         token: "",
     });
-
-    const theme = React.useMemo(
-        () =>
-            createMuiTheme({
-                palette: {
-                    type: darkModeOn ? "dark" : "light",
-                },
-            }),
-        [darkModeOn]
-    );
 
     const loginSuccess = () => {
         setLogin(true);
@@ -736,7 +753,7 @@ const Dashboard = () => {
         setValue(newValue);
     };
 
-    const toggleDarkMode = () => setDarkModeOn(!darkModeOn);
+    const toggleDarkMode = () => toggleTheme();
 
     function a11yProps(index) {
         return {
@@ -746,7 +763,7 @@ const Dashboard = () => {
     }
 
     return (
-        <ThemeProvider theme={theme}>
+        <>
             <AppBar position="static">
                 <Tabs value={value} onChange={handleTabChange}>
                     <Tab label="Landing Pictures" {...a11yProps(0)} />
@@ -756,7 +773,11 @@ const Dashboard = () => {
                     <Tab label="Products" {...a11yProps(4)} />
                 </Tabs>
                 <IconButton onClick={toggleDarkMode}>
-                    {darkModeOn ? <Brightness4Icon /> : <Brightness7Icon />}
+                    {theme === "light" ? (
+                        <Brightness4Icon />
+                    ) : (
+                        <Brightness7Icon />
+                    )}
                 </IconButton>
             </AppBar>
             <Box className={classes.mainBackground}>
@@ -910,8 +931,7 @@ const Dashboard = () => {
                                     <ImageUpload
                                         idx={idx}
                                         onChange={onChange}
-                                        src={val || null}
-                                        value={val || null}
+                                        val={val || null}
                                     />
                                 ),
                             },
@@ -940,7 +960,7 @@ const Dashboard = () => {
                 className={"center"}
             >
             </div> */}
-        </ThemeProvider>
+        </>
     );
 };
 

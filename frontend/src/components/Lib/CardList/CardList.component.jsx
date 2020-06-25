@@ -16,22 +16,31 @@ import {
     CardHeader,
     CardActions,
     CardContent,
+    ListItemIcon,
+    Fade,
 } from "@material-ui/core";
 
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import DeleteIcon from "@material-ui/icons/Delete";
+import EditIcon from "@material-ui/icons/Edit";
+import { useEffect } from "react";
+import { sendToSrvr } from "../connections";
 
 const useStyles = makeStyles((theme) => ({
     root: {
         display: "flex",
         justifyContent: "space-around",
         overflow: "hidden auto",
-        backgroundColor: theme.palette.background.paper,
-        minHeight: 0
+        backgroundColor: theme.palette.background.default,
+        minHeight: 0,
+        alignItems: "flex-start",
+        flexWrap: "wrap",
     },
     card: {
+        backgroundColor: theme.palette.background.paper,
         paddingBottom: theme.spacing(2),
-        boxSizing: 'border-box',
+        boxSizing: "border-box",
     },
     titleBar: {
         background:
@@ -43,35 +52,44 @@ const useStyles = makeStyles((theme) => ({
     },
     media: {
         height: 0,
-        paddingTop: '56.25%',
+        paddingTop: "56.25%",
     },
     expand: {
-        transform: 'rotate(0deg)',
-        marginLeft: 'auto',
-        transition: theme.transitions.create('transform', {
+        transform: "rotate(0deg)",
+        marginLeft: "auto",
+        transition: theme.transitions.create("transform", {
             duration: theme.transitions.duration.shortest,
         }),
     },
     expandOpen: {
-        transform: 'rotate(180deg)'
-    }
+        transform: "rotate(180deg)",
+    },
+    outerBox: {
+        padding: theme.spacing(4),
+    },
 }));
 
-export const CollectionItem = ({ img, title, desc, featured }) => {
+export const CollectionItem = ({
+    img,
+    title,
+    desc,
+    featured,
+    index,
+    handleOpen,
+}) => {
     const classes = useStyles();
     const [show, setShow] = useState(false);
 
     const handleToggle = () => setShow(!show);
-    const handleSettings = () => console.log("settings");
 
     return (
-        <Box>
+        <Box className={classes.outerBox}>
             <Card className={classes.card}>
                 <CardHeader
                     action={
-                        <IconButton 
-                            aria-labels={`settings-${title}`}
-                            onClick={handleSettings}
+                        <IconButton
+                            aria-label={`settings-${title}`}
+                            onClick={handleOpen}
                         >
                             <MoreVertIcon />
                         </IconButton>
@@ -82,14 +100,19 @@ export const CollectionItem = ({ img, title, desc, featured }) => {
                     className={classes.media}
                     src={img}
                     title={title}
-                    component='img'
+                    component="img"
                 />
                 <CardActions disableSpacing>
                     <IconButton
                         onClick={handleToggle}
                         aria-expanded={show}
-                        className={show ? `${classes.expand} ${classes.expandOpen}` : classes.expand }
+                        className={
+                            show
+                                ? `${classes.expand} ${classes.expandOpen}`
+                                : classes.expand
+                        }
                         aria-label={"Show more"}
+                        data-idx={index}
                     >
                         <ExpandMoreIcon />
                     </IconButton>
@@ -104,29 +127,87 @@ export const CollectionItem = ({ img, title, desc, featured }) => {
     );
 };
 
+const OptionMenu = ({ selectedIndex, onClose, anchorEl, open }) => {
+    const handleClose = () => {
+        onClose();
+    };
+
+    const handleDelete = () => {
+        // TODO: Delete request
+        handleClose();
+    };
+
+    const handleEdit = () => {
+        // TODO: Populate and display modal
+    };
+
+    return (
+        <Menu
+            anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+            }}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            open={open}
+        >
+            <MenuItem onClick={handleEdit}>
+                <ListItemIcon>
+                    <EditIcon />
+                </ListItemIcon>
+                <Typography variant="inherit">Edit</Typography>
+            </MenuItem>
+            <MenuItem onClick={handleDelete}>
+                <ListItemIcon>
+                    <DeleteIcon />
+                </ListItemIcon>
+                <Typography variant="inherit">Delete</Typography>
+            </MenuItem>
+        </Menu>
+    );
+};
+
 export const CollectionList = ({ tiles }) => {
     const classes = useStyles();
     const [indexOpen, setIndexOpen] = useState(-1);
+    const [card, setCard] = useState(null);
     const [menuOpen, setMenuOpen] = useState(false);
 
-    const handleOpen = e => {
-        console.log(e.currentTarget);
-        const idx = Number(e.currentTarget.getAttribute('data-idx'));
-        setMenuOpen(false);
+    const handleOpen = (e) => {
+        setCard(e.currentTarget);
+        const idx = Number(e.currentTarget.getAttribute("data-idx"));
         if (idx === indexOpen) {
             setIndexOpen(-1);
             return;
         }
+        setMenuOpen(true);
         setIndexOpen(idx);
-    }
+    };
 
-    const handleSettings = () => menuOpen(!menuOpen)
+    const handleClose = () => {
+        setMenuOpen(false);
+        setIndexOpen(-1);
+    };
 
     return (
         <Box className={classes.root}>
             {tiles.map(([image, title, desc, featured], index) => (
-                <CollectionItem title={title} img={image} desc={desc} featured={featured} />
+                <CollectionItem
+                    title={title}
+                    img={image}
+                    desc={desc}
+                    featured={featured}
+                    index={index}
+                    handleOpen={handleOpen}
+                    key={index}
+                />
             ))}
+            <OptionMenu
+                anchorEl={card}
+                onClose={handleClose}
+                open={menuOpen}
+                selectedIndex={indexOpen}
+            />
         </Box>
     );
 };
