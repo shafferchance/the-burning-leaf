@@ -12,6 +12,7 @@ import {
 } from "@material-ui/core";
 
 import { sendToSrvr } from "../connections";
+import { useCustomContext } from "react-global-light";
 
 const useStyles = makeStyles((theme) => ({
     modal: {
@@ -24,9 +25,9 @@ const useStyles = makeStyles((theme) => ({
 const Login = ({ setState, setLogin, open, onLogin, onClose }) => {
     const [usr, setUsr] = useState("");
     const [pword, setPword] = useState("");
+    const [, setGlobalState] = useCustomContext("global");
     const [errors, setErrors] = useState({ user: "", pass: "" });
     const classes = useStyles();
-
     const handleClose = () => {
         if (onClose) {
             onClose();
@@ -57,7 +58,11 @@ const Login = ({ setState, setLogin, open, onLogin, onClose }) => {
                 }
                 if (result.message === "success") {
                     setErrors({ user: "", pass: "" });
-                    // setState(token);
+                    console.log(result.jwt_token);
+                    setGlobalState({
+                        type: "settoken",
+                        token: result.jwt_token,
+                    });
                     if (setLogin) {
                         setLogin(true);
                     }

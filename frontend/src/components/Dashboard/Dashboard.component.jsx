@@ -163,10 +163,13 @@ const EditModal = ({
     endpoint,
     id,
 }) => {
+    const [globalState] = useCustomContext("global");
     const [tmpData, setTmpData] = useReducer(StateMutate, {
         data: editFields.map(() => ""),
     });
     const classes = useStyles();
+
+    console.log(globalState);
 
     useEffect(() => {
         if (state.length > 0) {
@@ -243,7 +246,7 @@ const EditModal = ({
             }
             return val;
         });
-        console.log("--> ", entry, currIdx, sanitized);
+        console.log("--> ", entry, currIdx, sanitized, id);
         setState({
             type: "SET",
             key: "tmpData",
@@ -255,16 +258,24 @@ const EditModal = ({
             idx: currIdx,
             value: sanitized,
         });
+
+        console.log("--> ", id);
+        const body =
+            id !== undefined
+                ? {
+                      id: id,
+                      data: sanitized,
+                  }
+                : {
+                      data: sanitized,
+                  };
         sendToSrvr(
             endpoint,
-            JSON.stringify({
-                id: id,
-                data: sanitized,
-            }),
-            method,
+            JSON.stringify(body),
+            id === undefined ? "POST" : method,
             {
                 "content-type": "application/json",
-                "X-Auth-Header": `Bearer ${state.token}`,
+                "X-Auth-Header": `Bearer ${globalState.token}`,
             }
         )
             .then(console.log)

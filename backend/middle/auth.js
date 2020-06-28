@@ -1,18 +1,16 @@
 const jwt = require("jsonwebtoken");
 
 const role = {
-    "admin": [
-        {[/\/.+/]: ["GET","POST","DELETE"]}
-    ],
-    "customer": [
-        {[/api\/v1\/general\/.+/]: ["GET"]}
-    ]
-}
+    admin: [{ [/\/.+/]: ["GET", "POST", "DELETE"] }],
+    customer: [{ [/api\/v1\/general\/.+/]: ["GET"] }],
+};
 
-function isRole (req, res, next) {
-    const header = req.headers["authorization"];
+function isRole(req, res, next) {
+    const header = req.headers["x-auth-header"];
     if (!header) return res.status(403).send("Access Denied: No Token Found!");
-    const [_,token] = header.split(' ');
+    const [_, token] = header.split(" ");
+    console.log(header);
+    console.log(token);
     try {
         let perms = [];
         const decoded = jwt.verify(token, process.env.SECRET);
@@ -31,7 +29,9 @@ function isRole (req, res, next) {
             req.user = decoded;
             next();
         } else {
-            return res.status(401).send('Access Denied: You do not have permission to do this')
+            return res
+                .status(401)
+                .send("Access Denied: You do not have permission to do this");
         }
     } catch (ex) {
         res.status(401).send(`Invalid token: ${ex}`);
