@@ -54,7 +54,7 @@ import Store from "../App/store_front.jpeg";
 import { sendToSrvr } from "../Lib/connections";
 import { SearchBarCtrld } from "../Lib/AppBar/SearchBar.component";
 import { CollectionList } from "../Lib/CardList/CardList.component";
-import { useDarkTheme } from "../Lib/hooks";
+import { useDarkTheme, usePrevious } from "../Lib/hooks";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -111,7 +111,7 @@ const useStyles = makeStyles((theme) => ({
     },
     tabBackground: {
         backgroundColor: theme.palette.background.default,
-        height: '100%'
+        height: "100%",
     },
 }));
 
@@ -159,11 +159,24 @@ const EditModal = ({
     onClose,
     currIdx,
     entry,
+    method,
+    endpoint,
+    id,
 }) => {
     const [tmpData, setTmpData] = useReducer(StateMutate, {
-        data: state.length > 0 ? state : editFields.map(() => ""),
+        data: editFields.map(() => ""),
     });
     const classes = useStyles();
+
+    useEffect(() => {
+        if (state.length > 0) {
+            setTmpData({
+                type: "SET",
+                key: "data",
+                value: state,
+            });
+        }
+    }, [state]);
 
     const handleClose = () => {
         if (onClose) {
@@ -192,12 +205,6 @@ const EditModal = ({
             case "File":
                 handleFile(e)
                     .then((result) => {
-                        // setState({
-                        //     type: "SET",
-                        //     key: "tmpData",
-                        //     idx: val,
-                        //     value: result,
-                        // })
                         console.log("--> ", result);
                         setTmpData({
                             type: "SET_ARRAY_ELE",
@@ -236,6 +243,7 @@ const EditModal = ({
             }
             return val;
         });
+        console.log("--> ", entry, currIdx, sanitized);
         setState({
             type: "SET",
             key: "tmpData",
@@ -247,6 +255,20 @@ const EditModal = ({
             idx: currIdx,
             value: sanitized,
         });
+        sendToSrvr(
+            endpoint,
+            JSON.stringify({
+                id: id,
+                data: sanitized,
+            }),
+            method,
+            {
+                "content-type": "application/json",
+                "X-Auth-Header": `Bearer ${state.token}`,
+            }
+        )
+            .then(console.log)
+            .catch(console.error);
         handleClose();
     };
     const renderFields = () => {
@@ -448,6 +470,7 @@ const TabTable = ({
     setContextData,
     editFields,
     timeout,
+    endpoint,
 }) => {
     const classes = useStyles();
     const [state, dispatch] = useReducer(StateMutate, {
@@ -473,6 +496,8 @@ const TabTable = ({
                 currIdx={state.currIdx}
                 setState={dispatch}
                 entry={property}
+                endpoint={endpoint}
+                method={state.currIdx === state.data.length ? "POST" : "PUT"}
             />
         </div>
     );
@@ -517,7 +542,14 @@ const ImageUpload = ({ val, onChange, idx }) => {
     );
 };
 
-const TabGrid = ({ title, editFields, state, setContextState, entry }) => {
+const TabGrid = ({
+    title,
+    editFields,
+    state,
+    setContextState,
+    entry,
+    endpoint,
+}) => {
     const [tmpState, setTmpState] = useReducer(StateMutate, {
         data: [
             [
@@ -568,22 +600,64 @@ const TabGrid = ({ title, editFields, state, setContextState, entry }) => {
             value: tmpState.data.length,
         });
     };
+
+    const handleDelete = (index) => {
+        setTmpState({
+            type: "RM_ARRAY",
+            key: "data",
+            value: index,
+        });
+    };
+
+    const handleEdit = (index) => {
+        console.log("--> ", index);
+        setTmpState({
+            type: "SET",
+            key: "editing",
+            value: true,
+        });
+        setTmpState({
+            type: "SET",
+            key: "tmpData",
+            value: tmpState.data[index],
+        });
+        setTmpState({
+            type: "SET",
+            key: "currIdx",
+            value: index,
+        });
+    };
+
     const handleFilterChange = (e) => setFilter(e.target.value);
 
     return (
-        <Box style={{height: '100%'}}>
+        <Box style={{ height: "100%" }}>
             <Box
                 className={classes.mainBackground}
-                style={{ boxSizing: "border-box", display: 'flex', height: '100%', paddingBottom: '185px' }}
+                style={{
+                    boxSizing: "border-box",
+                    display: "flex",
+                    height: "100%",
+                    paddingBottom: "185px",
+                }}
             >
-                <Box style={{position: 'relative', height: '100%', display: 'flex', flex: '1 0 0', overflow: 'hidden auto'}}>
-                    <CollectionList tiles={tmpState.data} />
+                <Box
+                    style={{
+                        position: "relative",
+                        height: "100%",
+                        display: "flex",
+                        flex: "1 0 0",
+                        overflow: "hidden auto",
+                    }}
+                >
+                    <CollectionList
+                        tiles={tmpState.data}
+                        onDelete={handleDelete}
+                        onEdit={handleEdit}
+                    />
                 </Box>
             </Box>
-            <AppBar
-                color={"primary"}
-                className={classes.appBar}
-            >
+            <AppBar color={"primary"} className={classes.appBar}>
                 <Toolbar>
                     <Fab
                         color="secondary"
@@ -607,6 +681,10 @@ const TabGrid = ({ title, editFields, state, setContextState, entry }) => {
                 editing={tmpState.editing}
                 entry={entry || title}
                 currIdx={tmpState.currIdx}
+                method={
+                    tmpState.currIdx === tmpState.data.length ? "POST" : "PUT"
+                }
+                endpoint={endpoint}
             />
         </Box>
     );
@@ -646,7 +724,11 @@ const TabPanel = ({ value, index, children, ...other }) => {
             className={classes.tabBackground}
             {...other}
         >
-            {value === index && <Box style={{height: '100%'}} p={3}>{children}</Box>}
+            {value === index && (
+                <Box style={{ height: "100%" }} p={3}>
+                    {children}
+                </Box>
+            )}
         </Box>
     );
 };
@@ -742,7 +824,7 @@ const Dashboard = () => {
                     "PUT",
                     {
                         "content-type": "application/json",
-                        Authoriztion: `Bearer ${state.token}`,
+                        "X-Auth-Header": `Bearer ${state.token}`,
                     }
                 )
                     .then((result) => console.log(result))
@@ -824,6 +906,7 @@ const Dashboard = () => {
                         setData={setTestState}
                         name={"Events"}
                         property={"data"}
+                        endpoint={"api/v1/general/events"}
                     />
                 </TabPanel>
                 <TabPanel value={value} index={2}>
@@ -861,6 +944,7 @@ const Dashboard = () => {
                         setData={annoucements}
                         name={"Announcements"}
                         property={"data"}
+                        endpoint={"api/v1/general/announcements"}
                     />
                 </TabPanel>
                 <TabPanel value={value} index={3}>
@@ -915,13 +999,14 @@ const Dashboard = () => {
                                 ),
                             },
                         ]}
+                        endpoint={"api/v1/about/hours"}
                     />
                 </TabPanel>
                 <TabPanel
                     value={value}
                     index={4}
                     className={classes.gridListContainer}
-                    style={{height: '100%'}}
+                    style={{ height: "100%" }}
                 >
                     <TabGrid
                         title={"Products"}
@@ -929,7 +1014,7 @@ const Dashboard = () => {
                         setState={reducer}
                         entry={"data"}
                         className={classes.fullContainer}
-                        style={{ boxSizing: "border-box", height: '100%' }}
+                        style={{ boxSizing: "border-box", height: "100%" }}
                         editFields={[
                             {
                                 comp: (val, onChange, idx) => (
@@ -949,6 +1034,7 @@ const Dashboard = () => {
                                 label: "Description: ",
                             },
                         ]}
+                        endpoint={"api/v1/inv/products"}
                     />
                 </TabPanel>
             </Box>

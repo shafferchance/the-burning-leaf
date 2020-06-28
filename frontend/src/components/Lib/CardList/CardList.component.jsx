@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
         minHeight: 0,
         alignItems: "flex-start",
         flexWrap: "wrap",
-        position: 'absolute'
+        position: "absolute",
     },
     card: {
         backgroundColor: theme.palette.background.paper,
@@ -91,6 +91,7 @@ export const CollectionItem = ({
                         <IconButton
                             aria-label={`settings-${title}`}
                             onClick={handleOpen}
+                            data-idx={index}
                         >
                             <MoreVertIcon />
                         </IconButton>
@@ -128,18 +129,26 @@ export const CollectionItem = ({
     );
 };
 
-const OptionMenu = ({ selectedIndex, onClose, anchorEl, open }) => {
+const OptionMenu = ({
+    selectedIndex,
+    onDelete,
+    onEdit,
+    onClose,
+    anchorEl,
+    open,
+}) => {
     const handleClose = () => {
         onClose();
     };
 
     const handleDelete = () => {
-        // TODO: Delete request
+        onDelete(selectedIndex);
         handleClose();
     };
 
     const handleEdit = () => {
-        // TODO: Populate and display modal
+        onEdit(selectedIndex);
+        handleClose();
     };
 
     return (
@@ -168,7 +177,7 @@ const OptionMenu = ({ selectedIndex, onClose, anchorEl, open }) => {
     );
 };
 
-export const CollectionList = ({ tiles }) => {
+export const CollectionList = ({ tiles, onDelete, onEdit }) => {
     const classes = useStyles();
     const [indexOpen, setIndexOpen] = useState(-1);
     const [card, setCard] = useState(null);
@@ -208,6 +217,8 @@ export const CollectionList = ({ tiles }) => {
                 onClose={handleClose}
                 open={menuOpen}
                 selectedIndex={indexOpen}
+                onDelete={onDelete}
+                onEdit={onEdit}
             />
         </Box>
     );

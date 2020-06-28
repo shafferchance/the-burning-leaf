@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useRef } from "react";
 
 function getWindowDimensions() {
     const { innerWidth: width, innerHeigth: height } = window;
@@ -55,3 +56,34 @@ export const useDarkTheme = () => {
 
     return [theme, toggleTheme];
 };
+
+export const usePrevious = (value) => {
+    const ref = useRef();
+
+    useEffect(() => {
+        ref.current = value;
+    });
+
+    const manuallyUpdateRef = (value) => {
+        ref.current = value;
+    };
+
+    return [ref.current, manuallyUpdateRef];
+};
+
+// Not a hook!
+export function objectEquality(obj1, obj2) {
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
+
+    if (keys1.length !== key2.length) {
+        return false;
+    }
+
+    for (const key of keys1) {
+        if (obj1[key] !== obj2[key]) {
+            return false;
+        }
+    }
+    return true;
+}
