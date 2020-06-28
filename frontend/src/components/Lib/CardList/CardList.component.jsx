@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
         minHeight: 0,
         alignItems: "flex-start",
         flexWrap: "wrap",
+        position: 'absolute'
     },
     card: {
         backgroundColor: theme.palette.background.paper,

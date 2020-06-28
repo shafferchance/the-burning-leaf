@@ -111,6 +111,7 @@ const useStyles = makeStyles((theme) => ({
     },
     tabBackground: {
         backgroundColor: theme.palette.background.default,
+        height: '100%'
     },
 }));
 
@@ -570,13 +571,16 @@ const TabGrid = ({ title, editFields, state, setContextState, entry }) => {
     const handleFilterChange = (e) => setFilter(e.target.value);
 
     return (
-        <Box
-            className={classes.mainBackground}
-            style={{ boxSizing: "border-box" }}
-        >
-            <CollectionList tiles={tmpState.data} />
+        <Box style={{height: '100%'}}>
+            <Box
+                className={classes.mainBackground}
+                style={{ boxSizing: "border-box", display: 'flex', height: '100%', paddingBottom: '185px' }}
+            >
+                <Box style={{position: 'relative', height: '100%', display: 'flex', flex: '1 0 0', overflow: 'hidden auto'}}>
+                    <CollectionList tiles={tmpState.data} />
+                </Box>
+            </Box>
             <AppBar
-                position={"relative"}
                 color={"primary"}
                 className={classes.appBar}
             >
@@ -634,7 +638,7 @@ const StateMutate = (state, action) => {
 const TabPanel = ({ value, index, children, ...other }) => {
     const classes = useStyles();
     return (
-        <div
+        <Box
             role="tabpanel"
             hidden={value !== index}
             id={`tabpanel-${index}`}
@@ -642,8 +646,8 @@ const TabPanel = ({ value, index, children, ...other }) => {
             className={classes.tabBackground}
             {...other}
         >
-            {value === index && <Box p={3}>{children}</Box>}
-        </div>
+            {value === index && <Box style={{height: '100%'}} p={3}>{children}</Box>}
+        </Box>
     );
 };
 
@@ -917,6 +921,7 @@ const Dashboard = () => {
                     value={value}
                     index={4}
                     className={classes.gridListContainer}
+                    style={{height: '100%'}}
                 >
                     <TabGrid
                         title={"Products"}
@@ -924,7 +929,7 @@ const Dashboard = () => {
                         setState={reducer}
                         entry={"data"}
                         className={classes.fullContainer}
-                        style={{ boxSizing: "border-box" }}
+                        style={{ boxSizing: "border-box", height: '100%' }}
                         editFields={[
                             {
                                 comp: (val, onChange, idx) => (
