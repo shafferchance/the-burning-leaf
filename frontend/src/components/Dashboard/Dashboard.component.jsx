@@ -3,7 +3,8 @@ import {
     KeyboardTimePicker,
     MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
+import MomentUtils from "@date-io/moment";
+import moment from "moment";
 import AddIcon from "@material-ui/icons/Add";
 import Brightness7Icon from "@material-ui/icons/Brightness7";
 import Brightness4Icon from "@material-ui/icons/Brightness4";
@@ -193,8 +194,9 @@ const EditModal = ({
         });
     };
 
-    const handleValue = (e, val) => {
+    const handleValue = (e, val, momentValue) => {
         console.log("--> Idx: ", val);
+        console.log(e);
         console.log(e.constructor);
         switch (e.constructor.name) {
             case "Date":
@@ -231,6 +233,14 @@ const EditModal = ({
                     key: "data",
                     idx: id,
                     value: value,
+                });
+                break;
+            case "Moment":
+                setTmpData({
+                    type: "SET_ARRAY_ELE",
+                    key: "data",
+                    idx: val,
+                    value: e.format(e._f),
                 });
                 break;
             default:
@@ -296,7 +306,7 @@ const EditModal = ({
             ) : typeof val.comp === "function" ? (
                 val.comp(
                     tmpData.data?.[idx] || null,
-                    (e) => handleValue(e, idx),
+                    (e, momentValue) => handleValue(e, idx, momentValue),
                     String(idx)
                 )
             ) : (
@@ -412,14 +422,15 @@ const DataTable = ({ name, columns, addRow, reducer }) => {
 
     const handleEdit = (rowData, rowMeta) => {
         console.log(rowData, rowMeta);
+        const idx = rowMeta
+            ? rowMeta.dataIndex >= 0
+                ? rowMeta.dataIndex
+                : state.data.length
+            : state.data.length;
         dispatch({
             type: "SET",
             key: "currIdx",
-            value: rowMeta
-                ? rowMeta.dataIndex >= 0
-                    ? rowMeta.dataIndex
-                    : state.data.length
-                : state.data.length,
+            value: idx,
         });
         dispatch({
             type: "SET",
@@ -431,6 +442,11 @@ const DataTable = ({ name, columns, addRow, reducer }) => {
             type: "SET",
             key: "editing",
             value: true,
+        });
+        dispatch({
+            type: "SET",
+            key: "id",
+            value: state.ids[idx],
         });
     };
     return (
@@ -482,6 +498,7 @@ const TabTable = ({
     editFields,
     timeout,
     endpoint,
+    ids,
 }) => {
     const classes = useStyles();
     const [state, dispatch] = useReducer(StateMutate, {
@@ -489,6 +506,8 @@ const TabTable = ({
         editing: false,
         currIdx: -1,
         tmpData: [],
+        ids: ids,
+        id: "",
     });
 
     return (
@@ -502,13 +521,14 @@ const TabTable = ({
             <EditModal
                 key="editing-modal"
                 editFields={editFields}
-                state={state.data}
+                state={state.tmpData}
                 editing={state.editing}
                 currIdx={state.currIdx}
                 setState={dispatch}
                 entry={property}
                 endpoint={endpoint}
                 method={state.currIdx === state.data.length ? "POST" : "PUT"}
+                id={state.id}
             />
         </div>
     );
@@ -755,21 +775,31 @@ const Dashboard = () => {
             about,
             experience,
             annoucements,
+            annoucementsId,
             events,
+            eventsId,
             landing_pics,
             products,
             hours,
+            hoursId,
             token,
         },
         reducer,
     ] = useReducer(StateMutate, {
         about: [],
+        aboutId: [],
         experience: [],
+        experienceId: [],
         annoucements: [],
+        annoucementsId: [],
         events: [],
+        eventsId: [],
         landing_pics: [],
+        landing_pics_Id: [],
         products: [],
+        productsId: [],
         hours: [],
+        hoursId: [],
         token: "",
     });
 
@@ -779,6 +809,7 @@ const Dashboard = () => {
             sendToSrvr("api/v1/general/landing_pictures"),
             sendToSrvr("api/v1/general/events_list"),
             sendToSrvr("api/v1/general/announcement_list"),
+            sendToSrvr("api/v1/about/hours"),
             sendToSrvr("api/v1/inv/products"),
         ]).then((results) => {
             reducer({
@@ -799,6 +830,11 @@ const Dashboard = () => {
             });
             reducer({
                 type: "SET",
+                key: "eventsId",
+                value: results[1].data.map((val) => val._id),
+            });
+            reducer({
+                type: "SET",
                 key: "annoucements",
                 value: results[2].data.map((val) => [
                     val.Date.value,
@@ -806,9 +842,29 @@ const Dashboard = () => {
                 ]),
             });
             reducer({
-                type: "setValue",
+                type: "SET",
+                key: "announcementsId",
+                value: results[2].data.map((val) => val._id),
+            });
+            reducer({
+                type: "SET",
+                key: "hours",
+                value: results[3].data.map((val) => val.data),
+            });
+            reducer({
+                type: "SET",
+                key: "hoursId",
+                value: results[3].data.map((val) => val._id),
+            });
+            reducer({
+                type: "SET",
                 key: "cigars",
-                value: results[3].data,
+                value: results[4].data,
+            });
+            reducer({
+                type: "SET",
+                key: "cigarsId",
+                value: results[4].data.map((val) => val._id),
             });
             setLogin(true);
         });
@@ -885,12 +941,13 @@ const Dashboard = () => {
                     <TabTable
                         columns={["Date", "Message"]}
                         data={events || []}
+                        ids={eventsId}
                         editFields={[
                             {
                                 comp: (val, onChange, idx) => {
                                     return (
                                         <MuiPickersUtilsProvider
-                                            utils={DateFnsUtils}
+                                            utils={MomentUtils}
                                         >
                                             <KeyboardDateTimePicker
                                                 autoOk={true}
@@ -898,8 +955,8 @@ const Dashboard = () => {
                                                 key={idx}
                                                 variant={"inline"}
                                                 label={"Date"}
-                                                format={"dd/MM/yyyy HH:mm"}
-                                                value={val}
+                                                format={"dd/MM/yyyy h:mm a"}
+                                                value={moment(val, "LLL")}
                                                 onChange={onChange}
                                                 InputAdornmentProps={{
                                                     position: "start",
@@ -924,11 +981,12 @@ const Dashboard = () => {
                     <TabTable
                         columns={["Date", "Message"]}
                         data={annoucements}
+                        ids={annoucementsId}
                         editFields={[
                             {
                                 comp: (val, onChange, idx) => (
                                     <MuiPickersUtilsProvider
-                                        utils={DateFnsUtils}
+                                        utils={MomentUtils}
                                     >
                                         <KeyboardDateTimePicker
                                             autoOk={true}
@@ -936,8 +994,8 @@ const Dashboard = () => {
                                             key={idx}
                                             variant={"inline"}
                                             label={"Date"}
-                                            format={"dd/MM/yyyy HH:mm"}
-                                            value={val}
+                                            format={"dd/MM/yyyy h:mm a"}
+                                            value={moment(val, "LLL")}
                                             onChange={onChange}
                                             autoOk
                                             InputAdornmentProps={{
@@ -961,15 +1019,8 @@ const Dashboard = () => {
                 <TabPanel value={value} index={3}>
                     <TabTable
                         columns={["Day of the Week", "Open", "Close"]}
-                        data={[
-                            ["Monday", "", ""],
-                            ["Tuesday", "", ""],
-                            ["Wednesday", "", ""],
-                            ["Thursday", "", ""],
-                            ["Friday", "", ""],
-                            ["Saturday", "", ""],
-                            ["Sunday", "", ""],
-                        ]}
+                        data={hours}
+                        ids={hoursId}
                         setData={setTestState}
                         name={"Hours"}
                         property={"data"}
@@ -984,12 +1035,12 @@ const Dashboard = () => {
                             {
                                 comp: (val, onChange) => (
                                     <MuiPickersUtilsProvider
-                                        utils={DateFnsUtils}
+                                        utils={MomentUtils}
                                     >
                                         <KeyboardTimePicker
                                             label={"Open"}
-                                            mask={"__:__ _M"}
-                                            value={val}
+                                            format={"h:mm a"}
+                                            value={moment(val, "LT")}
                                             onChange={onChange}
                                         />
                                     </MuiPickersUtilsProvider>
@@ -998,12 +1049,12 @@ const Dashboard = () => {
                             {
                                 comp: (val, onChange) => (
                                     <MuiPickersUtilsProvider
-                                        utils={DateFnsUtils}
+                                        utils={MomentUtils}
                                     >
                                         <KeyboardTimePicker
                                             label={"Close"}
-                                            mask={"__:__ _M"}
-                                            value={val}
+                                            format={"h:mm a"}
+                                            value={moment(val, "LT")}
                                             onChange={onChange}
                                         />
                                     </MuiPickersUtilsProvider>
