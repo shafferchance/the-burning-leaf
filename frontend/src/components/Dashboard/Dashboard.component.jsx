@@ -197,6 +197,7 @@ const EditModal = ({
     const handleValue = (e, val, momentValue) => {
         console.log("--> Idx: ", val);
         console.log(e);
+        console.log(e._f);
         console.log(e.constructor);
         switch (e.constructor.name) {
             case "Date":
@@ -240,7 +241,7 @@ const EditModal = ({
                     type: "SET_ARRAY_ELE",
                     key: "data",
                     idx: val,
-                    value: e.format(e._f),
+                    value: e.format(e._f || "MM-DD-YYYY hh:mm a"),
                 });
                 break;
             default:
@@ -955,7 +956,6 @@ const Dashboard = () => {
                                                 key={idx}
                                                 variant={"inline"}
                                                 label={"Date"}
-                                                format={"dd/MM/yyyy h:mm a"}
                                                 value={moment(val, "LLL")}
                                                 onChange={onChange}
                                                 InputAdornmentProps={{
@@ -994,8 +994,11 @@ const Dashboard = () => {
                                             key={idx}
                                             variant={"inline"}
                                             label={"Date"}
-                                            format={"dd/MM/yyyy h:mm a"}
-                                            value={moment(val, "LLL")}
+                                            format={"MM-DD-YYYY hh:mm a"}
+                                            value={moment(
+                                                val,
+                                                "MM-DD-YYYY hh:mm a"
+                                            )}
                                             onChange={onChange}
                                             autoOk
                                             InputAdornmentProps={{
