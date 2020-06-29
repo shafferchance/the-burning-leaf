@@ -36,6 +36,8 @@ import {
     Backdrop,
     makeStyles,
     Checkbox,
+    Card,
+    CardHeader,
     CardMedia,
     Toolbar,
     Tooltip,
@@ -116,30 +118,95 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const LandingPics = ({ pictures, mutate }) => {
+const LandingPics = ({ pictures, picturesId }) => {
     const classes = useStyles();
+    const [playing, setPlaying] = useState(true);
+    const [state, reducer] = useReducer(StateMutate, {
+        editing: false,
+        currIdx: -1,
+        data: pictures,
+        tmpData: [],
+    });
+
     const handleChange = (e) => {
         const { id, files } = e.target;
+        setPlaying(false);
         if (files.length > 0) {
             handleFile(files[0])
-                .then((result) => (pictures[id] = result))
+                .then((result) => {
+                    pictures[id] = result;
+                    setPlaying(true);
+                })
                 .catch(console.error);
+        } else {
+            console.log("No file found");
         }
-        console.log("No file found");
+    };
+
+    const handleEdit = (e) => {
+        const idx = e.currentTarget.getAttribute("data-idx");
+        reducer({
+            type: "SET",
+            key: "currIdx",
+            value: idx,
+        });
+        reducer({
+            type: "SET",
+            key: "tmpData",
+            reset: true,
+            value: state.data[idx],
+        });
+        reducer({
+            type: "SET",
+            key: "editing",
+            value: true,
+        });
+        reducer({
+            type: "SET",
+            key: "id",
+            value: picturesId[idx],
+        });
     };
 
     return (
-        <Carousel animation="slide">
-            {pictures.map((val, idx) => (
-                <ImageUpload
-                    src={val}
-                    value={null}
-                    onChange={handleChange}
-                    idx={idx}
-                    key={idx}
-                />
-            ))}
-        </Carousel>
+        <>
+            <Carousel
+                animation="slide"
+                autoPlay={playing}
+                style={{ height: "50%" }}
+            >
+                {pictures.map((val, idx) => (
+                    <Card key={idx} style={{ width: "100%", height: "50%" }}>
+                        <CardHeader
+                            action={
+                                <IconButton data-idx={idx} onClick={handleEdit}>
+                                    <PublishIcon />
+                                </IconButton>
+                            }
+                        />
+                        <CardMedia src={val[0]} component="img" />
+                    </Card>
+                ))}
+            </Carousel>
+            <EditModal
+                currIdx={state.currIdx}
+                editing={state.editing}
+                endpoint={"api/v1/general/landing_pictures"}
+                setState={reducer}
+                state={state.tmpData}
+                editFields={[
+                    {
+                        comp: (val, onChange, idx) => (
+                            <ImageUpload
+                                idx={idx}
+                                onChange={onChange}
+                                val={val || null}
+                            />
+                        ),
+                    },
+                ]}
+            />
+        </>
     );
 };
 
@@ -561,6 +628,7 @@ const ImageUpload = ({ val, onChange, idx }) => {
                 variant="outline"
             />
             <Button
+                style={{ paddingLeft: "100px" }}
                 htmlFor={idx}
                 component={"label"}
                 className={"shapefile-icon"}
@@ -837,10 +905,7 @@ const Dashboard = () => {
             reducer({
                 type: "SET",
                 key: "annoucements",
-                value: results[2].data.map((val) => [
-                    val.Date.value,
-                    val.Message.value,
-                ]),
+                value: results[2].data.map((val) => val.data),
             });
             reducer({
                 type: "SET",
