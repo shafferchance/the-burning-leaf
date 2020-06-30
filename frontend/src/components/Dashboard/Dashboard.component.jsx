@@ -107,6 +107,15 @@ const useStyles = makeStyles((theme) => ({
         width: "100%",
         height: "100%",
     },
+    landingPictureContainer: {
+        display: "flex",
+        flexDirection: "column",
+    },
+    landingPictureImage: {
+        width: "unset",
+        objectFit: "contain",
+        paddingBottom: "35px",
+    },
     mainBackground: {
         backgroundColor: theme.palette.background.default,
         width: "100%",
@@ -118,6 +127,16 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+function populateArray(array, length) {
+    if (array.length !== length) {
+        for (let i = array.length; i < length; i++) {
+            console.log("--> ", i, " set to blank");
+            array[i] = "";
+        }
+    }
+    return array;
+}
+
 const LandingPics = ({ pictures, picturesId }) => {
     const classes = useStyles();
     const [playing, setPlaying] = useState(true);
@@ -126,8 +145,16 @@ const LandingPics = ({ pictures, picturesId }) => {
         currIdx: -1,
         data: pictures,
         tmpData: [],
-        id: ''
+        id: "",
     });
+
+    useEffect(() => {
+        reducer({
+            type: "SET",
+            key: "data",
+            value: pictures,
+        });
+    }, [pictures]);
 
     const handleChange = (e) => {
         const { id, files } = e.target;
@@ -156,7 +183,7 @@ const LandingPics = ({ pictures, picturesId }) => {
         reducer({
             type: "SET",
             key: "tmpData",
-            value: state.data[idx] || [''],
+            value: [state.data[idx]] || [""],
         });
         reducer({
             type: "SET",
@@ -166,27 +193,36 @@ const LandingPics = ({ pictures, picturesId }) => {
         reducer({
             type: "SET",
             key: "id",
-            value: picturesId?.[idx] || ''
+            value: picturesId?.[idx] || "",
         });
     };
 
     return (
-        <>
+        <Box className={classes.fullContainer}>
             <Carousel
                 animation="slide"
-                autoPlay={playing}
+                autoPlay={false}
                 style={{ height: "50%" }}
             >
-                {pictures.map((val, idx) => (
-                    <Card key={idx} style={{ width: "100%", height: "50%" }}>
+                {state.data.map((val, idx) => (
+                    <Card key={idx} className={classes.landingPictureContainer}>
                         <CardHeader
                             action={
-                                <IconButton data-idx={idx} onClick={handleEdit} style={{marginRight: '100px'}}>
+                                <IconButton
+                                    data-idx={idx}
+                                    onClick={handleEdit}
+                                    style={{ marginRight: "100px" }}
+                                >
                                     <PublishIcon />
                                 </IconButton>
                             }
                         />
-                        <CardMedia src={val[0]} component="img" />
+                        <CardMedia
+                            src={val}
+                            component="img"
+                            className={classes.landingPictureImage}
+                            height={"500"}
+                        />
                     </Card>
                 ))}
             </Carousel>
@@ -197,6 +233,8 @@ const LandingPics = ({ pictures, picturesId }) => {
                 setState={reducer}
                 entry={"data"}
                 state={state.tmpData}
+                id={state.id}
+                method={"PUT"}
                 editFields={[
                     {
                         comp: (val, onChange, idx) => (
@@ -209,7 +247,7 @@ const LandingPics = ({ pictures, picturesId }) => {
                     },
                 ]}
             />
-        </>
+        </Box>
     );
 };
 
@@ -252,6 +290,10 @@ const EditModal = ({
             });
         }
     }, [state]);
+
+    useEffect(() => {
+        console.log("--> ", id);
+    }, [id]);
 
     const handleClose = () => {
         if (onClose) {
@@ -632,7 +674,6 @@ const ImageUpload = ({ val, onChange, idx }) => {
                 variant="outline"
             />
             <Button
-                style={{ paddingLeft: "100px" }}
                 htmlFor={idx}
                 component={"label"}
                 className={"shapefile-icon"}
@@ -852,6 +893,7 @@ const Dashboard = () => {
             events,
             eventsId,
             landing_pics,
+            landing_pics_id,
             products,
             hours,
             hoursId,
@@ -868,7 +910,7 @@ const Dashboard = () => {
         events: [],
         eventsId: [],
         landing_pics: [],
-        landing_pics_Id: [],
+        landing_pics_id: [],
         products: [],
         productsId: [],
         hours: [],
@@ -888,10 +930,20 @@ const Dashboard = () => {
             reducer({
                 type: "SET",
                 key: "landing_pics",
-                value:
+                value: populateArray(
                     results[0].data.length === 0
                         ? [PepBurn, Cigars, Lounge, Store]
-                        : results[0].data,
+                        : results[0].data.map((val) => val.data[0]),
+                    4
+                ),
+            });
+            reducer({
+                type: "SET",
+                key: "landing_pics_id",
+                value: populateArray(
+                    results[0].data.map((val) => val._id),
+                    4
+                ),
             });
             reducer({
                 type: "SET",
@@ -1005,7 +1057,10 @@ const Dashboard = () => {
             </AppBar>
             <Box className={classes.mainBackground}>
                 <TabPanel value={value} index={0}>
-                    <LandingPics pictures={landing_pics} />
+                    <LandingPics
+                        pictures={landing_pics}
+                        picturesId={landing_pics_id}
+                    />
                 </TabPanel>
                 <TabPanel value={value} index={1}>
                     <TabTable
