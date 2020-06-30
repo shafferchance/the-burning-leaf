@@ -126,6 +126,7 @@ const LandingPics = ({ pictures, picturesId }) => {
         currIdx: -1,
         data: pictures,
         tmpData: [],
+        id: ''
     });
 
     const handleChange = (e) => {
@@ -145,6 +146,8 @@ const LandingPics = ({ pictures, picturesId }) => {
 
     const handleEdit = (e) => {
         const idx = e.currentTarget.getAttribute("data-idx");
+        console.log("clicked");
+        console.log(state.data[idx]);
         reducer({
             type: "SET",
             key: "currIdx",
@@ -153,8 +156,7 @@ const LandingPics = ({ pictures, picturesId }) => {
         reducer({
             type: "SET",
             key: "tmpData",
-            reset: true,
-            value: state.data[idx],
+            value: state.data[idx] || [''],
         });
         reducer({
             type: "SET",
@@ -164,7 +166,7 @@ const LandingPics = ({ pictures, picturesId }) => {
         reducer({
             type: "SET",
             key: "id",
-            value: picturesId[idx],
+            value: picturesId?.[idx] || ''
         });
     };
 
@@ -179,7 +181,7 @@ const LandingPics = ({ pictures, picturesId }) => {
                     <Card key={idx} style={{ width: "100%", height: "50%" }}>
                         <CardHeader
                             action={
-                                <IconButton data-idx={idx} onClick={handleEdit}>
+                                <IconButton data-idx={idx} onClick={handleEdit} style={{marginRight: '100px'}}>
                                     <PublishIcon />
                                 </IconButton>
                             }
@@ -193,6 +195,7 @@ const LandingPics = ({ pictures, picturesId }) => {
                 editing={state.editing}
                 endpoint={"api/v1/general/landing_pictures"}
                 setState={reducer}
+                entry={"data"}
                 state={state.tmpData}
                 editFields={[
                     {
@@ -238,6 +241,7 @@ const EditModal = ({
     const classes = useStyles();
 
     console.log(globalState);
+    console.log(state);
 
     useEffect(() => {
         if (state.length > 0) {
