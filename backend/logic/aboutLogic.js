@@ -1,3 +1,5 @@
+const { ObjectID } = require("mongodb");
+
 const dbCrud = require("./database-crud");
 
 function getAbout(cb) {
@@ -23,7 +25,7 @@ function getHours(cb) {
 
 function updateHours(day, data, cb) {
     dbCrud
-        .mongoUPDATE("hours", { _id: day }, data)
+        .mongoUPDATE("hours", { _id: new ObjectID(day) }, data)
         .then((results) => cb(null, results))
         .catch((err) => cb(err, null));
 }
@@ -44,7 +46,7 @@ function updateLocation(data, cb) {
 
 function deleteAmenity(id, cb) {
     dbCrud
-        .mongoDELETE("amenties", { _id: id })
+        .mongoDELETE("amenties", { _id: new ObjectID(id) })
         .then((results) => cb(null, results))
         .catch((err) => cb(err, null));
 }
@@ -65,7 +67,7 @@ function postAmenity(data, cb) {
 
 function updateAmenity(id, data, cb) {
     dbCrud
-        .mongoUPDATE("amenties", { _id: id }, data)
+        .mongoUPDATE("amenties", { _id: new ObjectID(id) }, data)
         .then((results) => cb(null, results))
         .catch((err) => cb(err, null));
 }

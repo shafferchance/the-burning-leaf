@@ -201,7 +201,7 @@ const LandingPics = ({ pictures, picturesId }) => {
         <Box className={classes.fullContainer}>
             <Carousel
                 animation="slide"
-                autoPlay={false}
+                autoPlay={!state.editing}
                 style={{ height: "50%" }}
             >
                 {state.data.map((val, idx) => (
@@ -530,7 +530,7 @@ const removeFromItem = (state, action) => {
     }
 };
 
-const DataTable = ({ name, columns, addRow, reducer }) => {
+const DataTable = ({ name, columns, addRow, reducer, onDelete }) => {
     const classes = useStyles();
     const [state, dispatch] = reducer;
 
@@ -563,6 +563,15 @@ const DataTable = ({ name, columns, addRow, reducer }) => {
             value: state.ids[idx],
         });
     };
+
+    const handleDelete = (rowsDeleted) => {
+        if (onDelete) {
+            return onDelete(
+                rowsDeleted.data.map((val) => state.ids[val.dataIndex])
+            );
+        }
+    };
+
     return (
         <MUIDataTable
             title={name}
@@ -572,6 +581,7 @@ const DataTable = ({ name, columns, addRow, reducer }) => {
             options={{
                 filterType: "checkbox",
                 onRowClick: handleEdit,
+                onRowsDelete: handleDelete,
                 customToolbar: () => {
                     return <CustomToolbar handleClick={handleEdit} />;
                 },
@@ -611,10 +621,12 @@ const TabTable = ({
     setContextData,
     editFields,
     timeout,
+    onDelete,
     endpoint,
     ids,
 }) => {
     const classes = useStyles();
+    const [globalState] = useCustomContext("global");
     const [state, dispatch] = useReducer(StateMutate, {
         data: data,
         editing: false,
@@ -624,6 +636,22 @@ const TabTable = ({
         id: "",
     });
 
+    const handleDelete = (ids) => {
+        sendToSrvr(
+            endpoint,
+            JSON.stringify({
+                id: ids,
+            }),
+            "DELETE",
+            {
+                "content-type": "application/json",
+                "X-Auth-Header": `Bearer ${globalState.token}`,
+            }
+        )
+            .then(console.log)
+            .catch(console.error);
+    };
+
     return (
         <div className={classes.root}>
             <DataTable
@@ -631,6 +659,7 @@ const TabTable = ({
                 columns={columns}
                 reducer={[state, dispatch]}
                 setContextData={setContextData}
+                onDelete={handleDelete}
             />
             <EditModal
                 key="editing-modal"

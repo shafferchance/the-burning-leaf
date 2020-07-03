@@ -3,7 +3,7 @@ const generalLogic = require("../logic/generalLogic");
 const isRole = require("../middle/auth");
 
 general.delete("/announcements", isRole, (req, res, next) => {
-    generalLogic.deleteAnnouncement(req.body.id, (err, result) => {
+    generalLogic.deleteAnnouncements(req.body.id, (err, result) => {
         if (err !== null) {
             next(err);
         }
@@ -92,7 +92,7 @@ general.put("/contact", isRole, (req, res, next) => {
     });
 });
 
-general.delete("/event", isRole, (req, res, next) => {
+general.delete("/events", isRole, (req, res, next) => {
     generalLogic.deleteEvent(req.body.id, (err, result) => {
         if (err !== null) {
             return next(err);
@@ -101,7 +101,7 @@ general.delete("/event", isRole, (req, res, next) => {
     });
 });
 
-general.get("/event", (req, res, next) => {
+general.get("/events", (req, res, next) => {
     generalLogic.getEvent(req.body.id, (err, result) => {
         if (err !== null) {
             return next(err);
@@ -138,9 +138,6 @@ general.post("/events", isRole, (req, res, next) => {
 });
 
 general.put("/events", isRole, (req, res, next) => {
-    if (!req.session.user) {
-        next(err);
-    }
     generalLogic.updateEvent(req.body.id, req.body.data, (err, result) => {
         if (err !== null) {
             return next(err);
@@ -177,18 +174,15 @@ general.post("/landing_pictures", isRole, (req, res, next) => {
 });
 
 general.put("/landing_pictures", isRole, (req, res, next) => {
-    console.log(req.body);
-    generalLogic.updateLandingPicture(
-        req.body.id,
-        req.body.data,
-        (err, result) => {
-            if (err !== null) {
-                next(err);
-            }
-            console.log(result);
-            return res.status(200).json({ data: result }).end();
+    const { id, data } = req.body;
+    console.log("--> : ", id);
+    generalLogic.updateLandingPicture(id, data, (err, result) => {
+        if (err !== null) {
+            next(err);
         }
-    );
+        console.log(result);
+        return res.status(200).json({ data: result }).end();
+    });
 });
 
 // general.post("/login", (req, res, next) => {

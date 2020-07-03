@@ -31,9 +31,6 @@ inv.post("/products", isRole, (req, res, next) => {
 });
 
 inv.put("/products", isRole, (req, res, next) => {
-    if (!req.session.authenticated) {
-        next(err);
-    }
     invLogic.updateProduct(req.body.id, req.body.data, (err, result) => {
         if (err !== null) {
             next(err);
@@ -43,9 +40,6 @@ inv.put("/products", isRole, (req, res, next) => {
 });
 
 inv.delete("/products", isRole, (req, res, next) => {
-    if (!req.session.authenticated) {
-        next(err);
-    }
     invLogic.deleteProduct(req.body.id, (err, result) => {
         if (err !== null) {
             next(err);

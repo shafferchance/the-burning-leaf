@@ -139,7 +139,6 @@ module.exports = {
     DayHours,
     mongoGET,
     mongoGETOne,
-    mongoUPDATE,
     mongoDELETE,
     mongoAggregate,
     mongoUPDATE,
