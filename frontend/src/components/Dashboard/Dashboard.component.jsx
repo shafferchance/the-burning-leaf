@@ -371,6 +371,11 @@ const EditModal = ({
             return val;
         });
         console.log("--> ", entry, currIdx, sanitized, id);
+        setTmpData({
+            type: "SET",
+            key: "data",
+            value: null,
+        });
         setState({
             type: "SET",
             key: "tmpData",

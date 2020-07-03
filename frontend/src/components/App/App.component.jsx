@@ -12,9 +12,9 @@ import Cigars from "./cigars.jpeg";
 import Lounge from "./lounge.jpeg";
 import PepBurn from "./people_burning.jpeg";
 import Store from "./store_front.jpeg";
+import { app } from "./styles";
 import { sendToSrvr } from "../Lib/connections";
 
-import "../../assets/index.css";
 import {
     makeStyles,
     createMuiTheme,
@@ -22,7 +22,6 @@ import {
     Box,
 } from "@material-ui/core";
 import { useDarkTheme } from "../Lib/hooks";
-import { useRef } from "react";
 
 const routes = [
     { id: 0, path: ["/"], name: "Landing", component: <Landing /> },
@@ -58,24 +57,16 @@ const Header = ({ pics }) => {
     );
 };
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        backgroundColor: theme.palette.background.default,
-        width: "100%",
-        height: "100%",
-    },
-}));
-
 const App = () => {
     const [pics, setPics] = useState([]);
     const [dashboard, setDashboard] = useState(false);
     const [theme, setTheme] = useState("light");
-    const classes = useStyles();
+    const classes = app();
     useDarkTheme();
 
     useEffect(() => {
         sendToSrvr("api/v1/general/landing_pictures").then((formatted) =>
-            setPics(formatted["data"])
+            setPics(formatted["data"].map((val) => val.data[0]))
         );
 
         const localTheme = window.localStorage.getItem("theme");
@@ -122,9 +113,7 @@ const App = () => {
             <GlobalStore stateI={initialState}>
                 <Routing
                     className={classes.root}
-                    Header={
-                        dashboard ? null : <Header pics={pics["data"] || []} />
-                    }
+                    Header={dashboard ? null : <Header pics={pics || []} />}
                     routes={routes}
                 ></Routing>
             </GlobalStore>
