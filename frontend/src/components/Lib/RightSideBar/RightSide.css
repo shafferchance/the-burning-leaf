@@ -1,27 +1,29 @@
 .right-banner {
     position: absolute;
     right: 0;
-    padding-top: 9vh;
+    padding-top: 10vh;
     height: 91vh;
     width: 15vw;
     margin-left: 5px;
     display: flex;
     flex-direction: row-reverse;
-    background-color: rgba(255,255,255,0.5);
+    background-color: rgba(255, 255, 255, 0.5);
     transition: ease;
     transition-duration: 1s;
+    overflow: hidden auto;
 }
 
 .right-banner-collapsed {
     position: absolute;
     right: 0;
-    top: 9vh;
+    top: 10vh;
     height: 91vh;
     min-width: 48px;
     width: 3vw;
-    background-color: rgba(255,255,255,0.5);
+    background-color: rgba(255, 255, 255, 0.5);
     transition: ease;
     transition-duration: 1s;
+    overflow: hidden auto;
 }
 
 .right-banner-icons {
@@ -31,7 +33,7 @@
     align-items: flex-end;
     text-align: center;
     align-content: center;
-    padding-right: 3px; 
+    padding-right: 3px;
 }
 
 .right-banner-item-enter {
@@ -49,7 +51,7 @@
 
 .right-banner-item-exit-active {
     opacity: 0;
-    transition: all 500ms ease-out 250ms; 
+    transition: all 500ms ease-out 250ms;
 }
 
 .svg-fit {
@@ -80,7 +82,7 @@
     }
 
     .mobile-item:after {
-        content: '\274e';
+        content: "\274e";
         top: 1ch;
         right: 1ch;
         position: absolute;
@@ -93,6 +95,6 @@
 
     .right-banner-item-exit-active {
         opacity: 0;
-        transition: all 500ms ease-out; 
+        transition: all 500ms ease-out;
     }
 }
