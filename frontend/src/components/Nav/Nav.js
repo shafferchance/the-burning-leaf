@@ -11,7 +11,7 @@ export const navStyles = makeStyles((theme) =>
             justifyContent: "space-between",
             alignItems: "center",
             backgroundColor: theme.palette.background.paper,
-            zIndex: 1,
+            zIndex: 2,
             minHeight: "45px",
             height: "10vh",
             "& .mobile-menu, #hamburger": {
@@ -74,7 +74,7 @@ export const navStyles = makeStyles((theme) =>
         navInfo: {
             display: "inline-flex",
             zIndex: 0,
-            "& h1": {
+            "& h5": {
                 padding: "0em 1em",
                 alignSelf: "center",
             },

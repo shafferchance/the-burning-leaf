@@ -80,7 +80,6 @@ const Landing = () => {
                     />,
                 ]}
             />
-            <RightSideBar />
         </main>
     );
 };

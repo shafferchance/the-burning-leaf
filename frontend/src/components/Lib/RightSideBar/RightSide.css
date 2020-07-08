@@ -17,13 +17,13 @@
     position: absolute;
     right: 0;
     top: 10vh;
-    height: 91vh;
+    height: 90vh;
     min-width: 48px;
     width: 3vw;
     background-color: rgba(255, 255, 255, 0.5);
     transition: ease;
     transition-duration: 1s;
-    overflow: hidden auto;
+    overflow: hidden;
 }
 
 .right-banner-icons {

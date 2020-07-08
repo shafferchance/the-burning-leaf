@@ -1,4 +1,4 @@
-import { createStyles, makeStyles } from "@material-ui/core";
+import { createStyles, makeStyles, fade } from "@material-ui/core";
 import { RightSideBar } from "../Lib/RightSideBar/RightSideBar.component";
 
 const picContainHeight = 300;
@@ -61,7 +61,7 @@ export const app = makeStyles((theme) =>
             height: "100%",
         },
         infoPanel: {
-            background: "rgba(0,0,0,0.6)",
+            background: fade(theme.palette.background.paper, 0.5),
             borderRadius: "15px",
             boxShadow: "2px 2px 7px rgba(0,0,0,0.6)",
             padding: "2ch",
