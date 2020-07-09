@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Routing, GlobalStore } from "react-global-light";
+import { SnackbarProvider } from "notistack";
 
 import About from "../About/About.component";
 import Dashboard from "../Dashboard/Dashboard.component";
@@ -110,13 +111,15 @@ const App = () => {
 
     return (
         <ThemeProvider theme={applicationTheme}>
-            <GlobalStore stateI={initialState}>
-                <Routing
-                    className={classes.root}
-                    Header={dashboard ? null : <Header pics={pics || []} />}
-                    routes={routes}
-                ></Routing>
-            </GlobalStore>
+            <SnackbarProvider maxSnack={3}>
+                <GlobalStore stateI={initialState}>
+                    <Routing
+                        className={classes.root}
+                        Header={dashboard ? null : <Header pics={pics || []} />}
+                        routes={routes}
+                    ></Routing>
+                </GlobalStore>
+            </SnackbarProvider>
         </ThemeProvider>
     );
 };

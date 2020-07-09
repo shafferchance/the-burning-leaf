@@ -23,24 +23,22 @@ export const rightSideStyles = makeStyles((theme) =>
         },
         rightBannerContent: {
             "&-enter": {
-                transform: "translateX(12vw)",
                 opacity: 0,
+                width: "0vw",
                 position: "absolute",
             },
             "&-enter-active": {
-                transform: "translateX(0)",
                 width: "20vw",
                 opacity: 1,
                 transition: "all 500ms 500ms",
             },
             "&-exit": {
-                transform: "translateX(0)",
                 width: "20vw",
                 opacity: 1,
             },
             "&-exit-active": {
-                transform: "translateX(12vw)",
                 opacity: 0,
+                width: "0vw",
                 transition: "all 500ms",
             },
         },
