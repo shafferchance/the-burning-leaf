@@ -24,30 +24,24 @@ import {
     DialogActions,
     DialogTitle,
     Button,
-    ExpansionPanel,
-    ExpansionPanelDetails,
-    ExpansionPanelSummary,
     TextField,
     Typography,
     IconButton,
-    Input,
     Fab,
     Fade,
     Backdrop,
     makeStyles,
-    Checkbox,
     Card,
     CardHeader,
     CardMedia,
     Toolbar,
     Tooltip,
     withStyles,
-    ThemeProvider,
-    useMediaQuery,
-    createMuiTheme,
-    Paper,
     Tabs,
     Tab,
+    FormGroup,
+    FormControlLabel,
+    Switch,
 } from "@material-ui/core";
 
 import Cigars from "../App/cigars.jpeg";
@@ -335,12 +329,23 @@ const EditModal = ({
                     .catch(console.error);
                 break;
             case "SyntheticEvent":
+                console.log(e.target);
                 const { id, value } = e.target;
                 console.log("--> Syn Eve: ", id, value);
+                if (e.target.checked) {
+                    console.log("--> ", e.target.checked);
+                    setTmpData({
+                        type: "SET_ARRAY_ELE",
+                        key: "data",
+                        idx: val,
+                        value: e.target.checked,
+                    });
+                    return;
+                }
                 if (e.target.files) {
                     console.log("--> ", e.target.files[0]);
                     handleValue(e.target.files[0], val);
-                    break;
+                    return;
                 }
                 setTmpData({
                     type: "SET_ARRAY_ELE",
@@ -730,36 +735,7 @@ const TabGrid = ({
     endpoint,
 }) => {
     const [tmpState, setTmpState] = useReducer(StateMutate, {
-        data: [
-            [
-                "https://picsum.photos/seed/picsum/200/300",
-                "hello",
-                "world",
-                false,
-            ],
-            ["https://picsum.photos/seed/picsum/200/350", "two", "three", true],
-            ["https://picsum.photos/seed/picsum/200/400", "four", "five", true],
-            [
-                "https://picsum.photos/seed/picsum/200/100",
-                "three",
-                "six",
-                false,
-            ],
-            ["https://picsum.photos/seed/picsum/230/100", "three", "six", true],
-            ["https://picsum.photos/seed/adsfdf/200/100", "three", "six", true],
-            [
-                "https://picsum.photos/seed/qeqqrqr/200/100",
-                "three",
-                "six",
-                true,
-            ],
-            [
-                "https://picsum.photos/seed/eqrwrqwd/200/100",
-                "three",
-                "six",
-                false,
-            ],
-        ],
+        data: state,
         editing: false,
         currIdx: -1,
         tmpData: [],
@@ -808,7 +784,7 @@ const TabGrid = ({
     };
 
     const handleFilterChange = (e) => setFilter(e.target.value);
-
+    console.log(tmpState.data);
     return (
         <Box style={{ height: "100%" }}>
             <Box
@@ -1014,12 +990,12 @@ const Dashboard = () => {
             });
             reducer({
                 type: "SET",
-                key: "cigars",
-                value: results[4].data,
+                key: "products",
+                value: results[4].data.map((val) => val.data),
             });
             reducer({
                 type: "SET",
-                key: "cigarsId",
+                key: "productsId",
                 value: results[4].data.map((val) => val._id),
             });
             setLogin(true);
@@ -1072,7 +1048,18 @@ const Dashboard = () => {
     }
 
     return (
-        <>
+        <Box
+            style={{
+                zIndex: 999,
+                transform: "translateZ(0)",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                overflow: "hidden",
+            }}
+        >
             <AppBar position="static">
                 <Tabs value={value} onChange={handleTabChange}>
                     <Tab label="Landing Pictures" {...a11yProps(0)} />
@@ -1256,25 +1243,29 @@ const Dashboard = () => {
                                 type: "text",
                                 label: "Description: ",
                             },
+                            {
+                                comp: (val, onChange, idx) => (
+                                    <FormGroup>
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    id={idx}
+                                                    checked={val || false}
+                                                    onChange={onChange}
+                                                />
+                                            }
+                                            label="Split View"
+                                        />
+                                    </FormGroup>
+                                ),
+                            },
                         ]}
                         endpoint={"api/v1/inv/products"}
                     />
                 </TabPanel>
             </Box>
             <Login setState={reducer} open={!login} onLogin={loginSuccess} />
-            {/* <div
-                style={{
-                    position: "fixed",
-                    border: "1px solid black",
-                    borderRadius: "5px",
-                    width: "100vw",
-                    height: "100vh",
-                    zIndex: 999,
-                }}
-                className={"center"}
-            >
-            </div> */}
-        </>
+        </Box>
     );
 };
 

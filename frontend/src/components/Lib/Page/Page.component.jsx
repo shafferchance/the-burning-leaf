@@ -4,15 +4,15 @@ import { v1 } from "uuid";
 
 import { pageStyles } from "./Page";
 
-const Page = ({ components, className }) => {
+const Page = ({ components, className, animate = true }) => {
     const [idx, setIdx] = useState(0);
     const [active, setActive] = useState(components[0]);
-    const [animating, setAnimating] = useState();
+    const [animating, setAnimating] = useState(animate);
     const [scrolling, setScrolling] = useState(false);
     const classes = pageStyles();
 
     useEffect(() => {
-        if (!scrolling.current) {
+        if (!scrolling.current && animating) {
             animinate();
         } else if (animating) {
             clearInterval(animating);
@@ -65,7 +65,10 @@ const Page = ({ components, className }) => {
     )[0];
 
     return (
-        <div onWheel={handleScroll} className={classes.fullContainer}>
+        <div
+            onWheel={animating ? handleScroll : null}
+            className={classes.fullContainer}
+        >
             <TransitionGroup
                 className={`${classes.horizontalFlex} ${classes.center}`}
             >

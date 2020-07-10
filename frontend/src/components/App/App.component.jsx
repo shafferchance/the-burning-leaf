@@ -45,6 +45,7 @@ const initialState = {
     products: [],
     hours: [],
     token: "",
+    dashboard: false,
 };
 
 const Header = ({ pics }) => {
@@ -60,7 +61,6 @@ const Header = ({ pics }) => {
 
 const App = () => {
     const [pics, setPics] = useState([]);
-    const [dashboard, setDashboard] = useState(false);
     const [theme, setTheme] = useState("light");
     const classes = app();
     useDarkTheme();
@@ -81,14 +81,6 @@ const App = () => {
         window.addEventListener("storage", handleThemeChange);
         return () => window.removeEventListener("storage", handleThemeChange);
     }, []);
-
-    useEffect(() => {
-        if (window.location.pathname === "/dashboard") {
-            setDashboard(true);
-        } else {
-            setDashboard(false);
-        }
-    }, [window.location.pathname]);
 
     const applicationTheme = React.useMemo(
         () =>
@@ -115,7 +107,7 @@ const App = () => {
                 <GlobalStore stateI={initialState}>
                     <Routing
                         className={classes.root}
-                        Header={dashboard ? null : <Header pics={pics || []} />}
+                        Header={<Header pics={pics || []} />}
                         routes={routes}
                     ></Routing>
                 </GlobalStore>

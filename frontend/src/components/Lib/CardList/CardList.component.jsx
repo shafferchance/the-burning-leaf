@@ -36,7 +36,6 @@ const useStyles = makeStyles((theme) => ({
         minHeight: 0,
         alignItems: "flex-start",
         flexWrap: "wrap",
-        position: "absolute",
     },
     card: {
         backgroundColor: theme.palette.background.paper,
@@ -220,6 +219,31 @@ export const CollectionList = ({ tiles, onDelete, onEdit }) => {
                 onDelete={onDelete}
                 onEdit={onEdit}
             />
+        </Box>
+    );
+};
+
+export const StaticCollectionList = ({ tiles }) => {
+    const classes = useStyles();
+    const [card, setCard] = useState(null);
+
+    const handleOpen = (e) => {
+        setCard(e.currentTarget);
+    };
+
+    return (
+        <Box className={classes.root}>
+            {tiles.map(([image, title, desc, featured], index) => (
+                <CollectionItem
+                    title={title}
+                    img={image}
+                    desc={desc}
+                    featured={featured}
+                    index={index}
+                    handleOpen={handleOpen}
+                    key={index}
+                />
+            ))}
         </Box>
     );
 };
