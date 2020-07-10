@@ -63,7 +63,7 @@ app.use((req, res, next) => {
     console.log(req.path);
     next();
 });
-app.use(express.static(path.resolve("..", "static")));
+app.use(express.static(path.resolve("..", "frontend", "build")));
 app.use("/api/v1/about", about);
 app.use("/api/v1/general", general);
 app.use("/api/v1/inv", inv);

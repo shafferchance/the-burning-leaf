@@ -10,6 +10,7 @@ import {
     TextField,
     makeStyles,
 } from "@material-ui/core";
+import { useSnackbar } from "notistack";
 
 import { sendToSrvr } from "../connections";
 import { useCustomContext } from "react-global-light";
@@ -23,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Login = ({ setState, setLogin, open, onLogin, onClose }) => {
+    const { enqueueSanckbar } = useSnackbar();
     const [usr, setUsr] = useState("");
     const [pword, setPword] = useState("");
     const [, setGlobalState] = useCustomContext("global");
@@ -70,7 +72,12 @@ const Login = ({ setState, setLogin, open, onLogin, onClose }) => {
                 }
                 console.log(result);
             })
-            .catch((err) => console.error(err));
+            .catch((err) => {
+                enqueueSanckbar("Fatal Login Error", {
+                    varaint: "error",
+                });
+                console.error(err);
+            });
     };
 
     const handlePassword = (e) => {
