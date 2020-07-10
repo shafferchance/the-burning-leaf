@@ -5,7 +5,7 @@ import { SnackbarProvider } from "notistack";
 import About from "../About/About.component";
 import Dashboard from "../Dashboard/Dashboard.component";
 import Nav from "../Nav/navigation.component";
-import Landing from "../Landing/landing.component";
+import Landing from "../Landing/Landing.component";
 import Products from "../Products/Products.component";
 import RotatingPics from "../Lib/RotatingImgs/RotatingPics.component";
 
